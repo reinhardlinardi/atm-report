@@ -1,6 +1,3 @@
-import sys
-import random
-
 # Cmd args: <number of days> <number of ATM> <max number of transactions per ATM>
 #
 # ATM data folder: atm-transactions/{id}
@@ -9,16 +6,32 @@ import random
 # ATM data file ext: .xml/csv/json/yaml
 #
 # Transaction data:
-# - transactionId (hex alnum)
+# - transactionId (alnum)
 # - transactionDate (unix timestamp)
 # - transactionType (deposit/withdraw/transfer) (integer)
 # - amount (integer)
 # - cardNumber (16-digit numeric)
 # - destinationCardNumber (in case of transfer) (16-digit numeric)
 
+import sys
+import random
+import time
+import hashlib
+
 MAX_DAYS = 7
 MAX_ATM = 5
 MAX_TX = 10
+
+TYPE_WITHDRAW = 10
+TYPE_DEPOSIT = 11
+TYPE_TRANSFER = 20
+
+KEY_ID = 'transactionId'
+KEY_DATE = 'transactionDate'
+KEY_TYPE = 'transactionType'
+KEY_AMOUNT = 'amount'
+KEY_SRC = 'cardNumber'
+KEY_DEST = 'destinationCardNumber'
 
 class Args:
     def __init__(self, argv):
@@ -28,6 +41,18 @@ class Args:
 
     def __str__(self):
         return str(dict(days = self.days, atm = self.atm, max_tx = self.max_tx))
+
+class Tx:
+    def __init__(self):
+        self.id = hashlib.md5(str(time.time()*1000).encode()).digest().hex()[:12]
+        self.unix = 0
+        self.type = -1
+        self.amount = 0
+        self.src = 0
+        self.dest = 0
+
+    def __str__(self):
+        return str(dict(id = self.id, unix = self.unix, type = self.type, amount = self.amount, src = self.src, dest = self.dest))
 
 def parse_args():
     if not len(sys.argv) >= 4:
@@ -68,5 +93,8 @@ def main():
         return
     
     print(args)
+    
+    tx = Tx()
+    print(tx)
 
 main()
