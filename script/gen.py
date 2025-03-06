@@ -62,7 +62,7 @@ def get_args():
         atm = random.randint(1, MAX_ATM)
 
     if max_tx == 0:
-        max_tx = random.randint(1, MAX_TX)
+        max_tx = random.randint(0, MAX_TX)
 
     return {'days': days, 'atm': atm, 'max_tx': max_tx}
 
