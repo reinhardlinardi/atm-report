@@ -20,6 +20,7 @@ import os
 import csv
 import json
 import yaml
+import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta
 
 CSV = "csv"
@@ -47,7 +48,9 @@ KEY_AMOUNT = 'amount'
 KEY_SRC = 'cardNumber'
 KEY_DEST = 'destinationCardNumber'
 
-DATE_FORMAT = "%H:%M:%S"
+DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+XML_ROOT = 'transactions'
+XML_TAG = 'transaction'
 CSV_HEADER = [KEY_ID, KEY_DATE, KEY_TYPE, KEY_AMOUNT, KEY_SRC, KEY_DEST]
 
 class Args:
@@ -183,6 +186,28 @@ def write_yaml(data, f):
 
     yaml.dump(d, f)
 
+def write_xml(data, f):
+    root = ET.Element(XML_ROOT)
+
+    for tx in data:
+        tag = ET.SubElement(root, XML_TAG)
+        tag.set(KEY_ID, tx.id)
+
+        date = ET.SubElement(tag, KEY_DATE)
+        type = ET.SubElement(tag, KEY_TYPE)
+        amount = ET.SubElement(tag, KEY_AMOUNT)
+        src = ET.SubElement(tag, KEY_SRC)
+        dest = ET.SubElement(tag, KEY_DEST)
+        
+        date.text = Tx._strftime(tx.date)
+        type.text = str(tx.type)
+        amount.text = str(tx.amount)
+        src.text = tx.src
+        dest.text = tx.dest
+
+    s = ET.tostring(root)
+    f.write(s)
+
 def err(msg):
     return 'err: {}'.format(msg)
 
@@ -205,18 +230,25 @@ def main():
 
         for a in range(0, args.atm):
             id = chr(ord('A') + a)
+            
             ext = EXT[a % len(EXT)]
             name = '{}_{}.{}'.format(id, date.strftime(FILENAME_FORMAT), ext)
+            path = os.path.join(dir, name)
 
             num_tx = random.randint(0, args.max_tx)
             gen = generate(num_tx, date)
+
+            if ext == XML:
+                with open(path, 'wb') as f:
+                    write_xml(gen, f)
             
-            with open(os.path.join(dir, name), 'w') as f:
-                if ext == CSV:
-                    write_csv(gen, f)
-                if ext == JSON:
-                    write_json(gen, f)
-                if ext == YAML:
-                    write_yaml(gen, f)
+            else:
+                with open(path, 'w') as f:
+                    if ext == CSV:
+                        write_csv(gen, f)
+                    if ext == JSON:
+                        write_json(gen, f)
+                    if ext == YAML:
+                        write_yaml(gen, f)
                 
 main()
