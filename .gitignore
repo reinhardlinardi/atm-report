@@ -274,6 +274,7 @@ $RECYCLE.BIN/
 
 # Executable
 atm-report
+tools
 
-# Generated data
+# Generated files
 atm-transactions/*
