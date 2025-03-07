@@ -19,6 +19,7 @@ import hashlib
 import os
 import csv
 import json
+import yaml
 from datetime import datetime, timedelta
 
 CSV = "csv"
@@ -159,20 +160,28 @@ def cleardir(dir):
     
     return True
 
-def write_csv(gen, f):
+def write_csv(data, f):
     writer = csv.writer(f)
     writer.writerow(CSV_HEADER)
 
-    for row in gen:
+    for row in data:
         writer.writerow(row.list())
 
-def write_json(gen, f):
-    kv = []
+def write_json(data, f):
+    d = []
 
-    for tx in gen:
-        kv.append(tx.dict())
+    for tx in data:
+        d.append(tx.dict())
     
-    json.dump(kv, f)
+    json.dump(d, f)
+
+def write_yaml(data, f):
+    d = []
+
+    for tx in data:
+        d.append(tx.dict())
+
+    yaml.dump(d, f)
 
 def err(msg):
     return 'err: {}'.format(msg)
@@ -207,5 +216,7 @@ def main():
                     write_csv(gen, f)
                 if ext == JSON:
                     write_json(gen, f)
+                if ext == YAML:
+                    write_yaml(gen, f)
                 
 main()
