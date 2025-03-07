@@ -80,7 +80,7 @@ class Tx:
     def list(self):
         return [self.id, Tx._strftime(self.date) , self.type, self.amount, self.src, self.dest]
     
-    def __dict__(self):
+    def dict(self):
         return {KEY_ID: self.id, KEY_DATE: Tx._strftime(self.date), KEY_TYPE: self.type, KEY_AMOUNT: self.amount, KEY_SRC: self.src, KEY_DEST: self.dest}
 
     def _strftime(date):
@@ -166,6 +166,14 @@ def write_csv(gen, f):
     for row in gen:
         writer.writerow(row.list())
 
+def write_json(gen, f):
+    kv = []
+
+    for tx in gen:
+        kv.append(tx.dict())
+    
+    json.dump(kv, f)
+
 def err(msg):
     return 'err: {}'.format(msg)
 
@@ -197,5 +205,7 @@ def main():
             with open(os.path.join(dir, name), 'w') as f:
                 if ext == CSV:
                     write_csv(gen, f)
+                if ext == JSON:
+                    write_json(gen, f)
                 
 main()
