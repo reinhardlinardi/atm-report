@@ -25,17 +25,17 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	cleanup := make(chan bool, 1)
 
-	go app.Run(ctx, cleanup)
+	go app.Run(ctx, cancel, cleanup)
 
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, os.Interrupt)
 
 	<-sig
-	fmt.Println("shutting down")
+	fmt.Println("\ninterrupted, shutting down...")
 	cancel()
 
 	<-cleanup
-	fmt.Println("shutdown complete")
+	fmt.Println("exited")
 }
 
 func dbConfig(conf *config.Config) *db.Config {

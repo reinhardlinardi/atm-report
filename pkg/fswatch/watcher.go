@@ -28,6 +28,8 @@ func (w *WatcherImpl) WatchCreated(ctx context.Context, path string, channel cha
 		return err
 	}
 
+	fmt.Println("watcher started")
+
 	for {
 		select {
 		case event := <-w.watcher.Events:
@@ -35,11 +37,13 @@ func (w *WatcherImpl) WatchCreated(ctx context.Context, path string, channel cha
 			// New file created
 			case event.Op&fsnotify.Create == fsnotify.Create:
 				filename := event.Name
-				fmt.Println(filename)
 				channel <- filename
 			}
 		case <-ctx.Done():
 			w.watcher.Close()
+			close(channel)
+
+			fmt.Println("watcher stopped")
 			return nil
 		}
 	}

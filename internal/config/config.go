@@ -8,8 +8,13 @@ import (
 )
 
 type Config struct {
-	DB   *DBConfig   `yaml:"db"`
-	Cron *CronConfig `yaml:"cron"`
+	Server *ServerConfig `yaml:"server"`
+	DB     *DBConfig     `yaml:"db"`
+	Cron   *CronConfig   `yaml:"cron"`
+}
+
+type ServerConfig struct {
+	Port uint16 `yaml:"port"`
 }
 
 type DBConfig struct {
