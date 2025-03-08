@@ -36,7 +36,7 @@ Reports to expose via APIs:
 1. Open terminal, navigate to project root
 2. Create dataset folder and navigate to script directory
 ```bash
-mkdir atm-transactions && cd script
+mkdir dataset && cd script
 ```
 3. Run dataset generator
 ```bash

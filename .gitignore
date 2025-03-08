@@ -276,5 +276,8 @@ $RECYCLE.BIN/
 atm-report
 tools
 
+# Config file
+config/config.yaml
+
 # Generated files
-atm-transactions/*
+dataset/*
