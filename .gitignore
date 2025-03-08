@@ -280,4 +280,5 @@ tools
 config/config.yaml
 
 # Generated files
+wire_gen.go
 dataset/*
