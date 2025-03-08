@@ -1,4 +1,4 @@
-package app
+package config
 
 import (
 	"fmt"
@@ -21,11 +21,10 @@ type DBConfig struct {
 }
 
 type CronConfig struct {
-	Path    string `yaml:"path"`
-	WaitSec uint   `yaml:"wait_sec"`
+	Path string `yaml:"path"`
 }
 
-func ParseConfig(path string) (*Config, error) {
+func Parse(path string) (*Config, error) {
 	b, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err

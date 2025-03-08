@@ -6,4 +6,3 @@ db:
   schema: atm-report
 cron:
   path: dataset
-  wait_sec: 10

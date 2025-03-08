@@ -6,9 +6,8 @@ import (
 	"os"
 	"os/signal"
 	"path"
-	"syscall"
 
-	"github.com/reinhardlinardi/atm-report/app"
+	"github.com/reinhardlinardi/atm-report/internal/config"
 	"github.com/reinhardlinardi/atm-report/pkg/db"
 )
 
@@ -16,30 +15,36 @@ func main() {
 	dir := "config"
 	file := "config.yaml"
 
-	config, err := app.ParseConfig(path.Join(dir, file))
+	conf, err := config.Parse(path.Join(dir, file))
 	if err != nil {
 		return
 	}
 
-	_, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	app := initApp(conf)
+	ctx, cancel := context.WithCancel(context.Background())
+	shutdown := make(chan bool, 1)
 
-	initApp(config)
-	fmt.Println("DB connected")
+	go app.Run(ctx, shutdown)
 
 	sig := make(chan os.Signal, 1)
-	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
-	<-sig
+	signal.Notify(sig, os.Interrupt)
 
+	fmt.Println("waiting...")
+
+	<-sig
 	fmt.Println("shutting down")
+	cancel()
+
+	<-shutdown
+	fmt.Println("shutdown complete")
 }
 
-func dbConfig(config *app.Config) *db.Config {
+func dbConfig(conf *config.Config) *db.Config {
 	return &db.Config{
-		User:   config.DB.User,
-		Pass:   config.DB.Pass,
-		Host:   config.DB.Host,
-		Port:   config.DB.Port,
-		Schema: config.DB.Schema,
+		User:   conf.DB.User,
+		Pass:   conf.DB.Pass,
+		Host:   conf.DB.Host,
+		Port:   conf.DB.Port,
+		Schema: conf.DB.Schema,
 	}
 }

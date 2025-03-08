@@ -8,8 +8,8 @@ import (
 )
 
 type DB struct {
-	Config *Config
 	Conn   *sqlx.DB
+	Config *Config
 }
 
 type Config struct {
