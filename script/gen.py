@@ -1,4 +1,4 @@
-# Cmd args: <number of days> <number of ATM> <max number of transactions per ATM>
+# cmd args: <number of days> <number of ATM> <max number of transactions per ATM>
 #
 # ATM data directory: atm-transactions
 # ATM data filename: {id}_YYYYMMDD.{ext}
@@ -6,7 +6,7 @@
 #
 # Transaction data:
 # - transactionId (hex string)
-# - transactionDate (datetime)
+# - transactionDate (YYYY-MM-DD)
 # - transactionType (integer)
 # - amount (integer)
 # - cardNumber (16-digit number)
@@ -32,7 +32,7 @@ FILENAME_FORMAT = '%Y%m%d'
 EXT = [CSV, JSON, YAML, XML]
 
 MAX_DAYS = 7
-MAX_ATM = 5
+MAX_ATM = 8
 MAX_TX = 10
 
 TYPE_WITHDRAW = 0
@@ -48,7 +48,7 @@ KEY_AMOUNT = 'amount'
 KEY_SRC = 'cardNumber'
 KEY_DEST = 'destinationCardNumber'
 
-DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+DATE_FORMAT = "%Y-%m-%d"
 XML_ROOT = 'transactions'
 XML_TAG = 'transaction'
 CSV_HEADER = [KEY_ID, KEY_DATE, KEY_TYPE, KEY_AMOUNT, KEY_SRC, KEY_DEST]
@@ -67,12 +67,12 @@ class Tx:
         self.amount = 0
         self.src = ''
         self.dest = ''
-        self.unix = 0
 
     def gen(self, date):
-        self.date = randtime(date)
-        self.unix = time.mktime(self.date.timetuple())
-        self.id = hashlib.md5(str(self.unix).encode()).digest().hex()[:12]
+        self.date = date
+        
+        t = time.mktime(randtime(self.date).timetuple())
+        self.id = hashlib.md5(str(t).encode()).digest().hex()[:12]
 
         self.type = TYPES[random.randrange(0, len(TYPES))]
         self.amount = randdigits(4)
@@ -82,13 +82,10 @@ class Tx:
             self.dest = randcardnum()
 
     def list(self):
-        return [self.id, Tx._strftime(self.date) , self.type, self.amount, self.src, self.dest]
+        return [self.id, self.date.strftime(DATE_FORMAT), self.type, self.amount, self.src, self.dest]
     
     def dict(self):
-        return {KEY_ID: self.id, KEY_DATE: Tx._strftime(self.date), KEY_TYPE: self.type, KEY_AMOUNT: self.amount, KEY_SRC: self.src, KEY_DEST: self.dest}
-
-    def _strftime(date):
-        return date.strftime(DATE_FORMAT)
+        return {KEY_ID: self.id, KEY_DATE: self.date.strftime(DATE_FORMAT), KEY_TYPE: self.type, KEY_AMOUNT: self.amount, KEY_SRC: self.src, KEY_DEST: self.dest}
 
 def randtime(date):
     hour = random.randrange(0, 24)
@@ -119,12 +116,13 @@ def generate(cnt, date):
         gen.append(tx)
         cnt -= 1
 
-    gen.sort(key = lambda tx : tx.unix)
     return gen
 
 def parseargs():
-    if not len(sys.argv) == 4:
-        return None, err('invalid number of cmd args, expect 3')
+    num_args = 3
+
+    if not len(sys.argv) == num_args+1:
+        return None, err('invalid number of cmd args, expect {}'.format(num_args))
     if not sys.argv[1].isdigit():
         return None, err('invalid number of days')
     if not sys.argv[2].isdigit():
@@ -199,7 +197,7 @@ def write_xml(data, f):
         src = ET.SubElement(tag, KEY_SRC)
         dest = ET.SubElement(tag, KEY_DEST)
         
-        date.text = Tx._strftime(tx.date)
+        date.text = tx.date.strftime(DATE_FORMAT)
         type.text = str(tx.type)
         amount.text = str(tx.amount)
         src.text = tx.src
