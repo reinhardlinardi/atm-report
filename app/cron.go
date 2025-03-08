@@ -16,6 +16,7 @@ func (app *App) RunCron(ctx context.Context, cancel context.CancelFunc) {
 
 		err := app.watcher.WatchCreated(ctx, app.config.Cron.Path, files)
 		if err != nil {
+			fmt.Printf("err watcher: %s\n", err.Error())
 			close(files)
 			cancel()
 		}

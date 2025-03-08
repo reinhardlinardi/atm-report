@@ -25,11 +25,11 @@ func New(config *Config) *DBImpl {
 }
 
 func (db *DBImpl) Open() error {
-	c := db.config
+	conf := db.config
+	dsn := fmt.Sprintf("%s:%s@(%s:%d)/%s", conf.User, conf.Pass, conf.Host, conf.Port, conf.Schema)
 
-	conn, err := sqlx.Connect("mysql", fmt.Sprintf("%s:%s@(%s:%d)/%s", c.User, c.Pass, c.Host, c.Port, c.Schema))
+	conn, err := sqlx.Connect("mysql", dsn)
 	if err != nil {
-		fmt.Printf("err connect db: %s\n", err.Error())
 		return err
 	}
 

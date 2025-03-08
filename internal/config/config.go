@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"os"
 
 	"gopkg.in/yaml.v3"
@@ -38,7 +37,6 @@ func Parse(path string) (*Config, error) {
 	config := &Config{}
 
 	if err := yaml.Unmarshal(b, config); err != nil {
-		fmt.Printf("err yaml unmarshal: %s\n", err.Error())
 		return nil, err
 	}
 

@@ -2,7 +2,6 @@ package fswatch
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/fsnotify/fsnotify"
 )
@@ -14,7 +13,6 @@ type WatcherImpl struct {
 func New() (*WatcherImpl, error) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
-		fmt.Printf("err create watcher: %s\n", err.Error())
 		return nil, err
 	}
 
@@ -24,11 +22,8 @@ func New() (*WatcherImpl, error) {
 
 func (w *WatcherImpl) WatchCreated(ctx context.Context, path string, channel chan string) error {
 	if err := w.watcher.Add(path); err != nil {
-		fmt.Printf("err watch %s: %s\n", path, err.Error())
 		return err
 	}
-
-	fmt.Println("watcher started")
 
 	for {
 		select {
@@ -36,14 +31,12 @@ func (w *WatcherImpl) WatchCreated(ctx context.Context, path string, channel cha
 			switch {
 			// New file created
 			case event.Op&fsnotify.Create == fsnotify.Create:
-				filename := event.Name
-				channel <- filename
+				channel <- event.Name
 			}
 		case <-ctx.Done():
 			w.watcher.Close()
 			close(channel)
 
-			fmt.Println("watcher stopped")
 			return nil
 		}
 	}
