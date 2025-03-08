@@ -13,10 +13,12 @@ import (
 
 func initApp(config *config.Config) (*app.App, error) {
 	wire.Build(
-		app.New,
 		dbConfig,
+		app.New,
 		db.New,
 		fswatch.New,
+		wire.Bind(new(db.DB), new(*db.DBImpl)),
+		wire.Bind(new(fswatch.Watcher), new(*fswatch.WatcherImpl)),
 	)
 
 	return &app.App{}, nil

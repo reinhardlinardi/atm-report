@@ -1,7 +1,5 @@
-all: gen build
-
-gen:
-	wire
+all: build
 
 build:
+	wire
 	go build

@@ -7,7 +7,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type DB struct {
+type DBImpl struct {
 	conn   *sqlx.DB
 	config *Config
 }
@@ -20,11 +20,11 @@ type Config struct {
 	Schema string
 }
 
-func New(config *Config) *DB {
-	return &DB{config: config}
+func New(config *Config) *DBImpl {
+	return &DBImpl{config: config}
 }
 
-func (db *DB) Open() error {
+func (db *DBImpl) Open() error {
 	c := db.config
 
 	conn, err := sqlx.Connect("mysql", fmt.Sprintf("%s:%s@(%s:%d)/%s", c.User, c.Pass, c.Host, c.Port, c.Schema))
@@ -37,6 +37,6 @@ func (db *DB) Open() error {
 	return nil
 }
 
-func (db *DB) Close() {
+func (db *DBImpl) Close() {
 	db.conn.Close()
 }

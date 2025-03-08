@@ -11,12 +11,12 @@ import (
 )
 
 type App struct {
-	db      *db.DB
-	watcher *fswatch.Watcher
+	db      db.DB
+	watcher fswatch.Watcher
 	config  *config.Config
 }
 
-func New(db *db.DB, watcher *fswatch.Watcher, config *config.Config) *App {
+func New(db db.DB, watcher fswatch.Watcher, config *config.Config) *App {
 	return &App{db: db, watcher: watcher, config: config}
 }
 

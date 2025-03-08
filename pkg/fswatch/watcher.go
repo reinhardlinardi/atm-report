@@ -7,23 +7,22 @@ import (
 	"github.com/fsnotify/fsnotify"
 )
 
-type Watcher struct {
+type WatcherImpl struct {
 	watcher *fsnotify.Watcher
-	path    string
 }
 
-func New() (*Watcher, error) {
+func New() (*WatcherImpl, error) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		fmt.Printf("err create watcher: %s\n", err.Error())
 		return nil, err
 	}
 
-	w := &Watcher{watcher: watcher}
+	w := &WatcherImpl{watcher: watcher}
 	return w, nil
 }
 
-func (w *Watcher) WatchCreated(ctx context.Context, path string, channel chan string) error {
+func (w *WatcherImpl) WatchCreated(ctx context.Context, path string, channel chan string) error {
 	if err := w.watcher.Add(path); err != nil {
 		fmt.Printf("err watch %s: %s\n", path, err.Error())
 		return err
