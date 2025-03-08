@@ -1,2 +1,4 @@
-app:
+all: build
+
+build:
 	go build

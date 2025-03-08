@@ -1,0 +1,9 @@
+db:
+  user: user
+  pass: pass
+  host: localhost
+  port: 3306
+  schema: atm-report
+filecron:
+  path: dataset
+  wait_sec: 10
