@@ -3,7 +3,6 @@ CREATE TABLE `atm-report`.`atm_transaction` (
   `atm_id` VARCHAR(10) NOT NULL,
   `transaction_id` VARCHAR(40) NOT NULL,
   `transaction_date` date NOT NULL,
-  `transaction_time` time NOT NULL,
   `transaction_type` TINYINT NOT NULL,
   `amount` INT NOT NULL,
   `card_number` CHAR(16) NOT NULL,
