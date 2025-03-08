@@ -8,8 +8,8 @@ import (
 )
 
 type Config struct {
-	DB       *DBConfig       `yaml:"db"`
-	FileCron *FileCronConfig `yaml:"filecron"`
+	DB   *DBConfig   `yaml:"db"`
+	Cron *CronConfig `yaml:"cron"`
 }
 
 type DBConfig struct {
@@ -20,7 +20,7 @@ type DBConfig struct {
 	Schema string `yaml:"schema"`
 }
 
-type FileCronConfig struct {
+type CronConfig struct {
 	Path    string `yaml:"path"`
 	WaitSec uint   `yaml:"wait_sec"`
 }

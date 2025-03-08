@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/reinhardlinardi/atm-report/internal/db"
+	"github.com/reinhardlinardi/atm-report/pkg/db"
 )
 
 type App struct {

@@ -276,9 +276,12 @@ $RECYCLE.BIN/
 atm-report
 tools
 
-# Config file
-config/config.yaml
-
 # Generated files
 wire_gen.go
 dataset/*
+
+# Config file
+config/config.yaml
+
+# Backup
+backup

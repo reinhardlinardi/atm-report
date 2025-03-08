@@ -9,7 +9,7 @@ import (
 	"syscall"
 
 	"github.com/reinhardlinardi/atm-report/app"
-	"github.com/reinhardlinardi/atm-report/internal/db"
+	"github.com/reinhardlinardi/atm-report/pkg/db"
 )
 
 func main() {

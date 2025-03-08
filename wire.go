@@ -6,7 +6,7 @@ package main
 import (
 	"github.com/google/wire"
 	"github.com/reinhardlinardi/atm-report/app"
-	"github.com/reinhardlinardi/atm-report/internal/db"
+	"github.com/reinhardlinardi/atm-report/pkg/db"
 )
 
 func initApp(config *app.Config) *app.App {
