@@ -285,6 +285,3 @@ dataset/*
 
 # Config file
 config/config.yaml
-
-# Backup
-backup

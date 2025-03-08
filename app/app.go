@@ -11,12 +11,12 @@ import (
 )
 
 type App struct {
-	DB     *db.DB
-	Config *config.Config
+	db     *db.DB
+	config *config.Config
 }
 
 func New(db *db.DB, config *config.Config) *App {
-	return &App{DB: db, Config: config}
+	return &App{db: db, config: config}
 }
 
 func (app *App) Run(ctx context.Context, shutdown chan bool) {

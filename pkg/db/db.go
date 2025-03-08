@@ -8,8 +8,8 @@ import (
 )
 
 type DB struct {
-	Conn   *sqlx.DB
-	Config *Config
+	conn   *sqlx.DB
+	config *Config
 }
 
 type Config struct {
@@ -21,11 +21,11 @@ type Config struct {
 }
 
 func New(config *Config) *DB {
-	return &DB{Config: config}
+	return &DB{config: config}
 }
 
 func (db *DB) Open() error {
-	c := db.Config
+	c := db.config
 
 	conn, err := sqlx.Connect("mysql", fmt.Sprintf("%s:%s@(%s:%d)/%s", c.User, c.Pass, c.Host, c.Port, c.Schema))
 	if err != nil {
@@ -33,10 +33,10 @@ func (db *DB) Open() error {
 		return err
 	}
 
-	db.Conn = conn
+	db.conn = conn
 	return nil
 }
 
 func (db *DB) Close() {
-	db.Conn.Close()
+	db.conn.Close()
 }
