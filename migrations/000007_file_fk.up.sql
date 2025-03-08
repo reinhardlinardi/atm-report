@@ -1,5 +1,5 @@
-ALTER TABLE `atm-report`.`atm_transaction` 
-ADD CONSTRAINT `atm_transaction_id_FK`
+ALTER TABLE `atm-report`.`file` 
+ADD CONSTRAINT `file_atm_id_FK`
   FOREIGN KEY (`atm_id`)
   REFERENCES `atm-report`.`atm` (`atm_id`)
   ON DELETE NO ACTION
