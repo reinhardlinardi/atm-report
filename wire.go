@@ -8,9 +8,16 @@ import (
 	"github.com/reinhardlinardi/atm-report/app"
 	"github.com/reinhardlinardi/atm-report/internal/config"
 	"github.com/reinhardlinardi/atm-report/pkg/db"
+	"github.com/reinhardlinardi/atm-report/pkg/fswatch"
 )
 
-func initApp(config *config.Config) *app.App {
-	wire.Build(app.New, db.New, dbConfig)
-	return &app.App{}
+func initApp(config *config.Config) (*app.App, error) {
+	wire.Build(
+		app.New,
+		dbConfig,
+		db.New,
+		fswatch.New,
+	)
+
+	return &app.App{}, nil
 }

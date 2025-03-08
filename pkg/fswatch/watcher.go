@@ -7,30 +7,41 @@ import (
 	"github.com/fsnotify/fsnotify"
 )
 
-func Run(ctx context.Context, path string) {
+type Watcher struct {
+	watcher *fsnotify.Watcher
+	path    string
+}
+
+func New() (*Watcher, error) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
-		fmt.Println(err)
-		return
+		fmt.Printf("err create watcher: %s\n", err.Error())
+		return nil, err
 	}
 
-	if err := watcher.Add(path); err != nil {
-		fmt.Println(err)
+	w := &Watcher{watcher: watcher}
+	return w, nil
+}
+
+func (w *Watcher) WatchCreated(ctx context.Context, path string, channel chan string) error {
+	if err := w.watcher.Add(path); err != nil {
+		fmt.Printf("err watch %s: %s\n", path, err.Error())
+		return err
 	}
 
 	for {
 		select {
-		case event := <-watcher.Events:
+		case event := <-w.watcher.Events:
 			switch {
-			// useful for new files when watching directories
+			// New file created
 			case event.Op&fsnotify.Create == fsnotify.Create:
-				fmt.Printf("File has been created: %s\n", event.Name)
+				filename := event.Name
+				fmt.Println(filename)
+				channel <- filename
 			}
 		case <-ctx.Done():
-			fmt.Println("quit watching")
-			watcher.Close()
-			fmt.Println("watcher closed")
-			return
+			w.watcher.Close()
+			return nil
 		}
 	}
 }

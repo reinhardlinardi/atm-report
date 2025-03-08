@@ -12,30 +12,29 @@ import (
 )
 
 func main() {
-	dir := "config"
-	file := "config.yaml"
-
-	conf, err := config.Parse(path.Join(dir, file))
+	conf, err := config.Parse(path.Join("config", "config.yaml"))
 	if err != nil {
 		return
 	}
 
-	app := initApp(conf)
-	ctx, cancel := context.WithCancel(context.Background())
-	shutdown := make(chan bool, 1)
+	app, err := initApp(conf)
+	if err != nil {
+		return
+	}
 
-	go app.Run(ctx, shutdown)
+	ctx, cancel := context.WithCancel(context.Background())
+	cleanup := make(chan bool, 1)
+
+	go app.Run(ctx, cleanup)
 
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, os.Interrupt)
-
-	fmt.Println("waiting...")
 
 	<-sig
 	fmt.Println("shutting down")
 	cancel()
 
-	<-shutdown
+	<-cleanup
 	fmt.Println("shutdown complete")
 }
 
