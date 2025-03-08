@@ -217,7 +217,7 @@ def main():
         return
     
     today = datetime.today().replace(hour = 0, minute = 0, second = 0)
-    dir = '../dataset'
+    dir = '../gen'
 
     if not cleardir(dir):
         print(err('failed to delete files in {}'.format(dir)))

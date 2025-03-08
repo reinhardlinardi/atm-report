@@ -272,12 +272,15 @@ $RECYCLE.BIN/
 # End of https://www.toptal.com/developers/gitignore/api/go,python,macos,linux,windows
 
 
-# Executable
+# Binaries
 atm-report
 tools
 
 # Generated files
 wire_gen.go
+gen/*
+
+# Watched files
 dataset/*
 
 # Config file
