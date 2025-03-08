@@ -33,26 +33,49 @@ Reports to expose via APIs:
 
 ### Dataset
 
-1. Open terminal, navigate to project root
-2. Create dataset folder and navigate to script directory
-```bash
-mkdir dataset && cd script
-```
+1. Open terminal
+2. Navigate to script directory
 3. Run dataset generator
 ```bash
-# cmd args: <# of days> <# of ATM> <max # of transactions per ATM>
+# Example
 python3 gen.py 2 4 0
 ```
 
 ### DB
 
-1. Create new DB schema
+1. Install [golang-migrate](https://github.com/golang-migrate/migrate/tree/master/cmd/migrate#installation)
+2. Create new DB schema
 ```sql
 CREATE SCHEMA `atm-report`;
 ```
-2. Install [golang-migrate](https://github.com/golang-migrate/migrate/tree/master/cmd/migrate#installation)
-
 3. Migrate DB tables
 ```bash
+# Replace path, user, and pass in this command
 ./migrate -path /path/to/migrations -database 'mysql://user:pass@tcp(localhost:3306)/atm-report' up
 ```
+
+### Build
+`make`
+
+## Run
+
+### Service
+`./atm-report`
+
+### Data Producer
+1. Open Terminal
+2. Navigate to script directory
+3. Run dataset producer
+```bash
+python3 send.py
+```
+4. Script will list all generated files and ask you which file to send.  
+   To select file, type the number on the left of filename and press Enter.  
+   To exit, press Ctrl+C.
+```
+1. ...
+2. ...
+
+>>> (type here)
+```
+  

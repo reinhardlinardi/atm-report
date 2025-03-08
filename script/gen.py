@@ -1,6 +1,8 @@
+# ATM report service dataset generator
+#
 # cmd args: <number of days> <number of ATM> <max number of transactions per ATM>
 #
-# ATM data directory: atm-transactions
+# ATM data directory: gen
 # ATM data filename: {id}_YYYYMMDD.{ext}
 # ATM data file ext: .csv/json/yaml/xml
 #
