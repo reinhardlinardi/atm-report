@@ -6,24 +6,25 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/reinhardlinardi/atm-report/internal/dataset"
+	"github.com/reinhardlinardi/atm-report/internal/datestr"
 )
 
 func (app *App) handleFile(path string) error {
-	filename := getFilename(path)
-
+	filename := filepath.Base(path)
 	ext := filepath.Ext(path)[1:]
+
 	name := strings.Split(filename, ".")[0]
 	parts := strings.Split(name, "_")
 
 	if len(parts) != 2 {
 		return fmt.Errorf("invalid name format: %s", filename)
 	}
-
 	atmId := parts[0]
-	dateStr := parts[1]
 
-	date, err := time.Parse(dateFmt, dateStr)
-	if err != nil {
+	date, valid := datestr.Parse(parts[1])
+	if !valid {
 		return fmt.Errorf("invalid date format: %s", filename)
 	}
 	if !isExtValid(ext) {
@@ -38,7 +39,7 @@ func (app *App) handleFile(path string) error {
 		return nil
 	}
 
-	if err := app.loadFile(path); err != nil {
+	if err := app.loadFile(path, atmId, ext, date); err != nil {
 		return fmt.Errorf("err load file: %s: %s", err.Error(), filename)
 	}
 	return nil
@@ -53,7 +54,7 @@ func (app *App) checkSkipFile(atmId string, date time.Time) (bool, error) {
 		return true, errors.New("atm id not exist")
 	}
 
-	skip, err := app.fileLoadRepo.IsExist(atmId, date.Format(dateFmt))
+	skip, err := app.fileLoadRepo.IsExist(atmId, datestr.Format(date))
 	if err != nil {
 		return true, errors.New("err check file load history")
 	}
@@ -61,21 +62,19 @@ func (app *App) checkSkipFile(atmId string, date time.Time) (bool, error) {
 	return skip, nil
 }
 
-func (app *App) loadFile(path string) error {
+func (app *App) loadFile(path, atmId, ext string, date time.Time) error {
 	raw, err := app.storage.Fetch(path)
 	if err != nil {
 		return fmt.Errorf("err fetch file: %s", err.Error())
 	}
 
-	fmt.Println(string(raw))
+	data, err := dataset.Parse(raw, ext)
+	if err != nil {
+		return fmt.Errorf("err parse file: %s", err.Error())
+	}
 
-	// transcation, err := dataset.Parse()
-	// filename := getFilename(path)
+	fmt.Println(data)
 	return nil
-}
-
-func getFilename(path string) string {
-	return filepath.Base(path)
 }
 
 func isExtValid(ext string) bool {
