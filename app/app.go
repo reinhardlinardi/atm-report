@@ -61,6 +61,7 @@ func (app *App) runServer(ctx context.Context, cancel context.CancelFunc) {
 	app.wg.Add(1)
 	defer app.wg.Done()
 
+	app.server.RegisterHandlers()
 	go app.server.Run(ctx, cancel)
 
 	<-ctx.Done()

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/reinhardlinardi/atm-report/internal/config"
 	"github.com/reinhardlinardi/atm-report/internal/repository/transactionrepo"
 )
@@ -13,21 +14,16 @@ import (
 type Server struct {
 	config          *config.Config
 	http            *http.Server
+	router          *chi.Mux
 	transactionRepo transactionrepo.Repository
 }
 
-func NewServer(
-	config *config.Config,
-	transactionRepo transactionrepo.Repository,
-) *Server {
+func NewServer(config *config.Config, transactionRepo transactionrepo.Repository) *Server {
 	addr := fmt.Sprintf(":%d", config.Server.Port)
-	server := &http.Server{Addr: addr, Handler: nil}
+	router := chi.NewRouter()
 
-	return &Server{
-		config:          config,
-		http:            server,
-		transactionRepo: transactionRepo,
-	}
+	server := &http.Server{Addr: addr, Handler: router}
+	return &Server{config: config, http: server, router: router, transactionRepo: transactionRepo}
 }
 
 func (srv *Server) Run(ctx context.Context, cancel context.CancelFunc) {
@@ -42,4 +38,13 @@ func (srv *Server) Run(ctx context.Context, cancel context.CancelFunc) {
 
 func (srv *Server) Shutdown(ctx context.Context) {
 	srv.http.Shutdown(ctx)
+}
+
+func (srv *Server) RegisterHandlers() {
+	r := srv.router
+
+	r.Route("/api/v1/daily", func(r chi.Router) {
+		r.Get("/transaction-count", countTransactionHandler)
+		r.Get("/max-withdraw", maxWithdrawHandler)
+	})
 }
