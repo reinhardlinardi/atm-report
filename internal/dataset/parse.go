@@ -6,6 +6,7 @@ import (
 
 	"github.com/gocarina/gocsv"
 	"github.com/reinhardlinardi/atm-report/internal/datestr"
+	"gopkg.in/yaml.v3"
 )
 
 var parserFunc = map[string]parser{
@@ -54,19 +55,18 @@ func parseJson(raw []byte) ([]Transaction, error) {
 }
 
 func parseYaml(raw []byte) ([]Transaction, error) {
-	// arr := []Transaction{}
-	// err := yaml.Unmarshal(raw, &arr)
+	arr := []Transaction{}
+	err := yaml.Unmarshal(raw, &arr)
 
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// for _, t := range arr {
-	// 	if _, valid := datestr.Parse(t.Date); !valid {
-	// 		return nil, errors.New("invalid date")
-	// 	}
-	// }
-	// return arr, nil
-	return nil, nil
+	if err != nil {
+		return nil, err
+	}
+	for _, t := range arr {
+		if _, valid := datestr.Parse(t.Date); !valid {
+			return nil, errors.New("invalid date")
+		}
+	}
+	return arr, nil
 }
 
 func parseXml(raw []byte) ([]Transaction, error) {
