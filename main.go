@@ -24,6 +24,11 @@ func main() {
 		return
 	}
 
+	if err := app.Connect(); err != nil {
+		return
+	}
+	defer app.Disconnect()
+
 	ctx, cancel := context.WithCancel(context.Background())
 	cleanup := make(chan bool, 1)
 

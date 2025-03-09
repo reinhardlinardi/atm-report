@@ -24,7 +24,7 @@ func New(config *Config) *DBImpl {
 	return &DBImpl{config: config}
 }
 
-func (db *DBImpl) Open() error {
+func (db *DBImpl) Connect() error {
 	conf := db.config
 	dsn := fmt.Sprintf("%s:%s@(%s:%d)/%s", conf.User, conf.Pass, conf.Host, conf.Port, conf.Schema)
 
@@ -37,6 +37,6 @@ func (db *DBImpl) Open() error {
 	return nil
 }
 
-func (db *DBImpl) Close() {
+func (db *DBImpl) Disconnect() {
 	db.conn.Close()
 }

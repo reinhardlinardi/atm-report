@@ -1,6 +1,9 @@
 package db
 
 type DB interface {
+	Connect() error
+	Disconnect()
+
 	QueryRow(dest any, query string, args ...any) error
 	InsertRow(query string, args ...any) (id int64, err error)
 	Query(dest any, query string, args ...any) error

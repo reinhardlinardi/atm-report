@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/reinhardlinardi/atm-report/internal/config"
+	"github.com/reinhardlinardi/atm-report/internal/repository/atmrepository"
 	"github.com/reinhardlinardi/atm-report/internal/storage"
 	"github.com/reinhardlinardi/atm-report/pkg/db"
 	"github.com/reinhardlinardi/atm-report/pkg/fswatch"
@@ -17,12 +18,37 @@ type App struct {
 	db      db.DB
 	watcher fswatch.Watcher
 	storage storage.Storage
+	atmRepo atmrepository.Repository
 	config  *config.Config
 	wg      sync.WaitGroup
 }
 
-func New(db db.DB, watcher fswatch.Watcher, storage storage.Storage, config *config.Config) *App {
-	return &App{db: db, watcher: watcher, storage: storage, config: config}
+func New(
+	db db.DB,
+	watcher fswatch.Watcher,
+	storage storage.Storage,
+	config *config.Config,
+	atmRepo atmrepository.Repository,
+) *App {
+	return &App{
+		db:      db,
+		watcher: watcher,
+		storage: storage,
+		atmRepo: atmRepo,
+		config:  config,
+	}
+}
+
+func (app *App) Connect() error {
+	if err := app.db.Connect(); err != nil {
+		fmt.Printf("err connect db: %s\n", err.Error())
+		return err
+	}
+	return nil
+}
+
+func (app *App) Disconnect() {
+	app.db.Disconnect()
 }
 
 func (app *App) Run(ctx context.Context, cancel context.CancelFunc, cleanup chan bool) {
