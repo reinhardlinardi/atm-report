@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"fmt"
+	"path/filepath"
 )
 
 func (app *App) runCron(ctx context.Context, cancel context.CancelFunc) {
@@ -30,6 +31,8 @@ func (app *App) runConsumer(_ context.Context, _ context.CancelFunc, channel cha
 	for path := range channel {
 		if err := app.handleFile(path); err != nil {
 			fmt.Printf("err handle file: %s\n", err.Error())
+		} else {
+			fmt.Printf("%s processed\n", filepath.Base(path))
 		}
 	}
 }

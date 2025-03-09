@@ -10,19 +10,21 @@ import (
 	"github.com/reinhardlinardi/atm-report/internal/config"
 	"github.com/reinhardlinardi/atm-report/internal/repository/atmrepository"
 	"github.com/reinhardlinardi/atm-report/internal/repository/fileloadrepository"
+	"github.com/reinhardlinardi/atm-report/internal/repository/transactionrepository"
 	"github.com/reinhardlinardi/atm-report/internal/storage"
 	"github.com/reinhardlinardi/atm-report/pkg/db"
 	"github.com/reinhardlinardi/atm-report/pkg/fswatch"
 )
 
 type App struct {
-	db           db.DB
-	watcher      fswatch.Watcher
-	storage      storage.Storage
-	atmRepo      atmrepository.Repository
-	fileLoadRepo fileloadrepository.Repository
-	config       *config.Config
-	wg           sync.WaitGroup
+	db              db.DB
+	watcher         fswatch.Watcher
+	storage         storage.Storage
+	atmRepo         atmrepository.Repository
+	fileLoadRepo    fileloadrepository.Repository
+	transactionRepo transactionrepository.Repository
+	config          *config.Config
+	wg              sync.WaitGroup
 }
 
 func New(
@@ -32,14 +34,16 @@ func New(
 	config *config.Config,
 	atmRepo atmrepository.Repository,
 	fileLoadRepo fileloadrepository.Repository,
+	transactionRepo transactionrepository.Repository,
 ) *App {
 	return &App{
-		db:           db,
-		watcher:      watcher,
-		storage:      storage,
-		atmRepo:      atmRepo,
-		fileLoadRepo: fileLoadRepo,
-		config:       config,
+		db:              db,
+		watcher:         watcher,
+		storage:         storage,
+		atmRepo:         atmRepo,
+		fileLoadRepo:    fileLoadRepo,
+		transactionRepo: transactionRepo,
+		config:          config,
 	}
 }
 

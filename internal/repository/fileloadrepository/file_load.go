@@ -21,3 +21,13 @@ func (rp *RepositoryImpl) IsExist(atmId, date string) (bool, error) {
 	}
 	return exist, nil
 }
+
+func (rp *RepositoryImpl) Insert(atmId, date string) (int64, error) {
+	query := "INSERT INTO file_load VALUES (0, ?, ?)"
+	id, err := rp.conn.InsertRow(query, atmId, date)
+
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
+}

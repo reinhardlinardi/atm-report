@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/reinhardlinardi/atm-report/internal/dataset"
 	"github.com/reinhardlinardi/atm-report/internal/datestr"
+	"github.com/reinhardlinardi/atm-report/model"
 )
 
 func (app *App) handleFile(path string) error {
@@ -21,10 +21,11 @@ func (app *App) handleFile(path string) error {
 	if len(parts) != 2 {
 		return fmt.Errorf("invalid name format: %s", filename)
 	}
-	atmId := parts[0]
 
-	date, valid := datestr.Parse(parts[1])
-	if !valid {
+	atmId := parts[0]
+	date := parts[1]
+
+	if _, valid := datestr.Parse(date); !valid {
 		return fmt.Errorf("invalid date format: %s", filename)
 	}
 	if !isExtValid(ext) {
@@ -39,13 +40,13 @@ func (app *App) handleFile(path string) error {
 		return nil
 	}
 
-	if err := app.loadFile(path, atmId, ext, date); err != nil {
+	if err := app.loadFile(path, atmId, date, ext); err != nil {
 		return fmt.Errorf("err load file: %s: %s", err.Error(), filename)
 	}
 	return nil
 }
 
-func (app *App) checkSkipFile(atmId string, date time.Time) (bool, error) {
+func (app *App) checkSkipFile(atmId, date string) (bool, error) {
 	exist, err := app.atmRepo.IsExist(atmId)
 	if err != nil {
 		return true, errors.New("err check atm id")
@@ -54,15 +55,15 @@ func (app *App) checkSkipFile(atmId string, date time.Time) (bool, error) {
 		return true, errors.New("atm id not exist")
 	}
 
-	skip, err := app.fileLoadRepo.IsExist(atmId, datestr.Format(date))
+	skip, err := app.fileLoadRepo.IsExist(atmId, date)
 	if err != nil {
-		return true, errors.New("err check file load history")
+		return true, errors.New("err check load history")
 	}
 
 	return skip, nil
 }
 
-func (app *App) loadFile(path, atmId, ext string, date time.Time) error {
+func (app *App) loadFile(path, atmId, date, ext string) error {
 	raw, err := app.storage.Fetch(path)
 	if err != nil {
 		return fmt.Errorf("err fetch file: %s", err.Error())
@@ -73,10 +74,37 @@ func (app *App) loadFile(path, atmId, ext string, date time.Time) error {
 		return fmt.Errorf("err parse file: %s", err.Error())
 	}
 
-	fmt.Println(data)
+	_, err = app.transactionRepo.InsertRows(convertToModel(atmId, data))
+	if err != nil {
+		return fmt.Errorf("err insert data: %s", err.Error())
+	}
+
+	_, err = app.fileLoadRepo.Insert(atmId, date)
+	if err != nil {
+		return fmt.Errorf("err insert load history: %s", err.Error())
+	}
+
 	return nil
 }
 
 func isExtValid(ext string) bool {
 	return ext == "csv" || ext == "json" || ext == "yaml" || ext == "xml"
+}
+
+func convertToModel(atmId string, data []dataset.Transaction) []model.Transaction {
+	res := []model.Transaction{}
+
+	for _, item := range data {
+		res = append(res, model.Transaction{
+			AtmId:           atmId,
+			TransactionId:   item.Id,
+			TransactionDate: item.Date,
+			TransactionType: item.Type,
+			Amount:          item.Amount,
+			CardNum:         item.CardNum,
+			DestCardNum:     item.DestCardNum,
+		})
+	}
+
+	return res
 }
