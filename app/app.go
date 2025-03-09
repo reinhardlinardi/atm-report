@@ -26,8 +26,8 @@ func New(db db.DB, watcher fswatch.Watcher, storage storage.Storage, config *con
 }
 
 func (app *App) Run(ctx context.Context, cancel context.CancelFunc, cleanup chan bool) {
-	go app.RunCron(ctx, cancel)
-	app.RunServer(ctx, cancel)
+	go app.runCron(ctx, cancel)
+	app.runServer(ctx, cancel)
 
 	// fmt.Println("waiting for goroutines...")
 	app.wg.Wait()
@@ -35,7 +35,7 @@ func (app *App) Run(ctx context.Context, cancel context.CancelFunc, cleanup chan
 	cleanup <- true
 }
 
-func (app *App) RunServer(ctx context.Context, cancel context.CancelFunc) {
+func (app *App) runServer(ctx context.Context, cancel context.CancelFunc) {
 	addr := fmt.Sprintf(":%d", app.config.Server.Port)
 	server := http.Server{
 		Addr:    addr,
