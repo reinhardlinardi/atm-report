@@ -18,6 +18,8 @@ import (
 func initApp(config *config.Config) (*app.App, error) {
 	wire.Build(
 		app.New,
+		app.NewServer,
+		app.NewCron,
 		db.New,
 		dbConfig,
 		wire.Bind(new(db.DB), new(*db.DBImpl)),

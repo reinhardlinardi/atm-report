@@ -11,7 +11,7 @@ import (
 	"github.com/reinhardlinardi/atm-report/internal/repository/transactionrepo"
 )
 
-func (app *App) handleFile(path string) error {
+func (c *Cron) handleFile(path string) error {
 	filename := filepath.Base(path)
 	ext := filepath.Ext(path)[1:]
 
@@ -32,7 +32,7 @@ func (app *App) handleFile(path string) error {
 		return fmt.Errorf("invalid ext: %s", filename)
 	}
 
-	skip, err := app.checkSkipFile(atmId, date)
+	skip, err := c.checkSkipFile(atmId, date)
 	if err != nil {
 		return fmt.Errorf("err check skip file: %s: %s", err.Error(), filename)
 	}
@@ -40,14 +40,14 @@ func (app *App) handleFile(path string) error {
 		return nil
 	}
 
-	if err := app.loadFile(path, atmId, date, ext); err != nil {
+	if err := c.loadFile(path, atmId, date, ext); err != nil {
 		return fmt.Errorf("err load file: %s: %s", err.Error(), filename)
 	}
 	return nil
 }
 
-func (app *App) checkSkipFile(atmId, date string) (bool, error) {
-	exist, err := app.atmRepo.IsExist(atmId)
+func (c *Cron) checkSkipFile(atmId, date string) (bool, error) {
+	exist, err := c.atmRepo.IsExist(atmId)
 	if err != nil {
 		return true, errors.New("err check atm id")
 	}
@@ -55,7 +55,7 @@ func (app *App) checkSkipFile(atmId, date string) (bool, error) {
 		return true, errors.New("atm id not exist")
 	}
 
-	skip, err := app.historyRepo.IsExist(atmId, date)
+	skip, err := c.historyRepo.IsExist(atmId, date)
 	if err != nil {
 		return true, errors.New("err check load history")
 	}
@@ -63,8 +63,8 @@ func (app *App) checkSkipFile(atmId, date string) (bool, error) {
 	return skip, nil
 }
 
-func (app *App) loadFile(path, atmId, date, ext string) error {
-	raw, err := app.storage.Fetch(path)
+func (c *Cron) loadFile(path, atmId, date, ext string) error {
+	raw, err := c.storage.Fetch(path)
 	if err != nil {
 		return fmt.Errorf("err fetch file: %s", err.Error())
 	}
@@ -74,12 +74,12 @@ func (app *App) loadFile(path, atmId, date, ext string) error {
 		return fmt.Errorf("err parse file: %s", err.Error())
 	}
 
-	_, err = app.transactionRepo.InsertRows(convertToModel(atmId, data))
+	_, err = c.transactionRepo.InsertRows(convertToModel(atmId, data))
 	if err != nil {
 		return fmt.Errorf("err insert data: %s", err.Error())
 	}
 
-	_, err = app.historyRepo.Insert(atmId, date)
+	_, err = c.historyRepo.Insert(atmId, date)
 	if err != nil {
 		return fmt.Errorf("err insert load history: %s", err.Error())
 	}

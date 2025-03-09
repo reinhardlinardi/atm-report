@@ -2,48 +2,32 @@ package app
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"net/http"
 	"sync"
 
 	"github.com/reinhardlinardi/atm-report/internal/config"
-	"github.com/reinhardlinardi/atm-report/internal/repository/atmrepo"
-	"github.com/reinhardlinardi/atm-report/internal/repository/historyrepo"
-	"github.com/reinhardlinardi/atm-report/internal/repository/transactionrepo"
-	"github.com/reinhardlinardi/atm-report/internal/storage"
 	"github.com/reinhardlinardi/atm-report/pkg/db"
-	"github.com/reinhardlinardi/atm-report/pkg/fswatch"
 )
 
 type App struct {
-	db              db.DB
-	watcher         fswatch.Watcher
-	storage         storage.Storage
-	atmRepo         atmrepo.Repository
-	historyRepo     historyrepo.Repository
-	transactionRepo transactionrepo.Repository
-	config          *config.Config
-	wg              sync.WaitGroup
+	config *config.Config
+	wg     sync.WaitGroup
+	cron   *Cron
+	server *Server
+	db     db.DB
 }
 
 func New(
 	config *config.Config,
+	cron *Cron,
+	server *Server,
 	db db.DB,
-	watcher fswatch.Watcher,
-	storage storage.Storage,
-	atmRepo atmrepo.Repository,
-	historyRepo historyrepo.Repository,
-	transactionRepo transactionrepo.Repository,
 ) *App {
 	return &App{
-		db:              db,
-		watcher:         watcher,
-		storage:         storage,
-		atmRepo:         atmRepo,
-		historyRepo:     historyRepo,
-		transactionRepo: transactionRepo,
-		config:          config,
+		config: config,
+		cron:   cron,
+		server: server,
+		db:     db,
 	}
 }
 
@@ -66,27 +50,19 @@ func (app *App) Run(ctx context.Context, cancel context.CancelFunc, cleanup chan
 	cleanup <- true
 }
 
-func (app *App) runServer(ctx context.Context, cancel context.CancelFunc) {
-	addr := fmt.Sprintf(":%d", app.config.Server.Port)
-	server := http.Server{
-		Addr:    addr,
-		Handler: nil,
-	}
-
+func (app *App) runCron(ctx context.Context, cancel context.CancelFunc) {
 	app.wg.Add(1)
+	defer app.wg.Done()
 
-	go func() {
-		defer app.wg.Done()
+	app.cron.Run(ctx, cancel)
+}
 
-		fmt.Printf("Listening on %s\n", addr)
-		err := server.ListenAndServe()
+func (app *App) runServer(ctx context.Context, cancel context.CancelFunc) {
+	app.wg.Add(1)
+	defer app.wg.Done()
 
-		if !errors.Is(err, http.ErrServerClosed) && err != nil {
-			fmt.Printf("err server listen: %s\n", err.Error())
-			cancel()
-		}
-	}()
+	go app.server.Run(ctx, cancel)
 
 	<-ctx.Done()
-	server.Shutdown(context.Background())
+	app.server.Shutdown(context.Background())
 }
