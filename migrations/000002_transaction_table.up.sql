@@ -1,4 +1,4 @@
-CREATE TABLE `atm-report`.`transaction` (
+CREATE TABLE `atm_report`.`transaction` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `atm_id` VARCHAR(10) NOT NULL,
   `transaction_id` VARCHAR(40) NOT NULL,

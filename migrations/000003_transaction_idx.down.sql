@@ -1,2 +1,2 @@
-ALTER TABLE `atm-report`.`transaction` 
+ALTER TABLE `atm_report`.`transaction` 
 DROP INDEX `transaction_idx` ;

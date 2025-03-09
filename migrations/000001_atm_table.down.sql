@@ -1,1 +1,1 @@
-DROP TABLE `atm-report`.`atm`;
+DROP TABLE `atm_report`.`atm`;

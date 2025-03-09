@@ -1,1 +1,1 @@
-SELECT 1 FROM `atm-report`.`atm` LIMIT 0;
+SELECT 1 FROM `atm_report`.`atm` LIMIT 0;

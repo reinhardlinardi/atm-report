@@ -46,12 +46,12 @@ python3 gen.py 2 4 0
 1. Install [golang-migrate](https://github.com/golang-migrate/migrate/tree/master/cmd/migrate#installation)
 2. Create new DB schema
 ```sql
-CREATE SCHEMA `atm-report`;
+CREATE SCHEMA `atm_report`;
 ```
 3. Migrate DB tables
 ```bash
 # Replace path, user, and pass in this command
-./migrate -path /path/to/migrations -database 'mysql://user:pass@tcp(localhost:3306)/atm-report' up
+./migrate -path /path/to/migrations -database 'mysql://user:pass@tcp(localhost:3306)/atm_report' up
 ```
 
 ### Build
@@ -62,20 +62,13 @@ CREATE SCHEMA `atm-report`;
 ### Service
 `./atm-report`
 
-### Data Producer
+### Producer
 1. Open Terminal
 2. Navigate to script directory
 3. Run dataset producer
 ```bash
 python3 send.py
 ```
-4. Script will list all generated files and ask you which file to send.  
-   To select file, type the number on the left of filename and press Enter.  
+4. Send file to consumer by typing the number on the left of filename and press Enter.  
    To exit, press Ctrl+C.
-```
-1. ...
-2. ...
-
->>> (type here)
-```
   
