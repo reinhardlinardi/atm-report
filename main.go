@@ -25,6 +25,7 @@ func main() {
 	}
 
 	if err := app.Connect(); err != nil {
+		fmt.Printf("err connect: %s\n", err.Error())
 		return
 	}
 	defer app.Disconnect()
@@ -38,11 +39,9 @@ func main() {
 	signal.Notify(sig, os.Interrupt)
 
 	<-sig
-	// fmt.Println("\ninterrupted, shutting down...")
 	cancel()
 
 	<-cleanup
-	// fmt.Println("exited")
 }
 
 func dbConfig(conf *config.Config) *db.Config {
