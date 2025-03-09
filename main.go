@@ -33,11 +33,11 @@ func main() {
 	signal.Notify(sig, os.Interrupt)
 
 	<-sig
-	fmt.Println("\ninterrupted, shutting down...")
+	// fmt.Println("\ninterrupted, shutting down...")
 	cancel()
 
 	<-cleanup
-	fmt.Println("exited")
+	// fmt.Println("exited")
 }
 
 func dbConfig(conf *config.Config) *db.Config {

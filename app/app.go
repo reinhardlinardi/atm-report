@@ -29,7 +29,7 @@ func (app *App) Run(ctx context.Context, cancel context.CancelFunc, cleanup chan
 	go app.RunCron(ctx, cancel)
 	app.RunServer(ctx, cancel)
 
-	fmt.Println("waiting for goroutines...")
+	// fmt.Println("waiting for goroutines...")
 	app.wg.Wait()
 
 	cleanup <- true
@@ -58,5 +58,5 @@ func (app *App) RunServer(ctx context.Context, cancel context.CancelFunc) {
 
 	<-ctx.Done()
 	server.Shutdown(context.Background())
-	fmt.Println("server stopped")
+	// fmt.Println("server stopped")
 }

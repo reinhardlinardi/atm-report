@@ -7,18 +7,10 @@ import (
 
 func (app *App) RunCron(ctx context.Context, cancel context.CancelFunc) {
 	app.wg.Add(2)
-	files := make(chan string, 10)
+	channel := make(chan string, 10)
 
-	go app.RunWatcher(ctx, cancel, files)
-	defer app.wg.Done()
-
-	fmt.Println("cron started")
-
-	for file := range files {
-		fmt.Println(file)
-	}
-
-	fmt.Println("cron stopped")
+	go app.RunWatcher(ctx, cancel, channel)
+	app.RunConsumer(channel)
 }
 
 func (app *App) RunWatcher(ctx context.Context, cancel context.CancelFunc, channel chan string) {
@@ -30,4 +22,15 @@ func (app *App) RunWatcher(ctx context.Context, cancel context.CancelFunc, chann
 		close(channel)
 		cancel()
 	}
+}
+
+func (app *App) RunConsumer(channel chan string) {
+	defer app.wg.Done()
+	// fmt.Println("consumer started")
+
+	for file := range channel {
+		fmt.Println(file)
+	}
+
+	// fmt.Println("consumer stopped")
 }
