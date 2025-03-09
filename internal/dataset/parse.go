@@ -1,6 +1,7 @@
 package dataset
 
 import (
+	"encoding/json"
 	"errors"
 
 	"github.com/gocarina/gocsv"
@@ -38,19 +39,18 @@ func parseCsv(raw []byte) ([]Transaction, error) {
 }
 
 func parseJson(raw []byte) ([]Transaction, error) {
-	// list := []Transaction{}
-	// err := json.Unmarshal(raw, &list)
+	list := []Transaction{}
+	err := json.Unmarshal(raw, &list)
 
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// for _, t := range list {
-	// 	if _, valid := datestr.Parse(t.Date); !valid {
-	// 		return nil, errors.New("invalid date")
-	// 	}
-	// }
-	// return list, nil
-	return nil, nil
+	if err != nil {
+		return nil, err
+	}
+	for _, t := range list {
+		if _, valid := datestr.Parse(t.Date); !valid {
+			return nil, errors.New("invalid date")
+		}
+	}
+	return list, nil
 }
 
 func parseYaml(raw []byte) ([]Transaction, error) {
