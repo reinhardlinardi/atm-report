@@ -1,4 +1,4 @@
-# ATM report service dataset producer
+# ATM report service dataset producer (send dataset file to consumer)
 
 import os
 import shutil
@@ -36,17 +36,21 @@ def copyfile(src, dest, name):
 
 def prompt():
     print()
-    print('>>> ', end = '')
+    print('Send file number: ', end = '')
 
 def sent():
-    print('sent')
+    print('File sent.')
     print()
 
 def invalid():
-    print('invalid')
+    print('Invalid. Please try again.')
     print()
 
 def main():
+    print('Type number and press Enter to send file.')
+    print('To exit, press Ctrl+C.')
+    print()
+
     while True:
         try:
             ok, arr = listdir(SRC)

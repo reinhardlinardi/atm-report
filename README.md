@@ -48,7 +48,7 @@ python3 gen.py 2 4 0
 ```sql
 CREATE SCHEMA `atm_report`;
 ```
-3. Migrate DB tables
+3. Migrate tables
 ```bash
 # Replace path, user, and pass in this command
 ./migrate -path /path/to/migrations -database 'mysql://user:pass@tcp(localhost:3306)/atm_report' up
@@ -59,16 +59,13 @@ CREATE SCHEMA `atm_report`;
 
 ## Run
 
-### Service
+### App
 `./atm-report`
 
 ### Producer
 1. Open Terminal
 2. Navigate to script directory
-3. Run dataset producer
+3. Run producer
 ```bash
 python3 send.py
 ```
-4. Send file to consumer by typing the number on the left of filename and press Enter.  
-   To exit, press Ctrl+C.
-  
