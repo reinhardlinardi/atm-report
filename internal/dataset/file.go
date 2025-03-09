@@ -8,6 +8,7 @@ import (
 )
 
 type FileInfo struct {
+	Name  string
 	AtmId string
 	Date  time.Time
 	Ext   string
@@ -15,11 +16,14 @@ type FileInfo struct {
 
 func ParseFileInfo(file string) (*FileInfo, error) {
 	ext := filepath.Ext(file)
-	name := strings.TrimSuffix(filepath.Base(file), ext)
+	name := filepath.Base(file)
 
+	parts := strings.Split(strings.TrimSuffix(name, ext), "_")
 	ext = ext[1:]
-	parts := strings.Split(name, "_")
 
+	if !isValidExt(ext) {
+		return nil, errors.New("invalid ext")
+	}
 	if len(parts) != 2 {
 		return nil, errors.New("invalid name format")
 	}
@@ -32,5 +36,10 @@ func ParseFileInfo(file string) (*FileInfo, error) {
 		return nil, errors.New("invalid date format")
 	}
 
-	return &FileInfo{AtmId: atmId, Date: date, Ext: ext}, nil
+	info := &FileInfo{Name: name, AtmId: atmId, Date: date, Ext: ext}
+	return info, nil
+}
+
+func isValidExt(ext string) bool {
+	return ext == FILE_CSV || ext == FILE_JSON || ext == FILE_YAML || ext == FILE_XML
 }

@@ -31,18 +31,29 @@ func (app *App) runConsumer(_ context.Context, _ context.CancelFunc, channel cha
 	// fmt.Println("consumer started")
 
 	for file := range channel {
-		_, err := app.storage.Fetch(file)
-		if err != nil {
-			fmt.Printf("err fetch file: %s\n", err.Error())
-			continue
-		}
-
 		info, err := dataset.ParseFileInfo(file)
 		if err != nil {
 			fmt.Printf("err parse info: %s\n", err.Error())
+			continue
 		}
 
-		fmt.Println(info)
+		exist, err := app.atmRepo.IsExist(info.AtmId)
+		if err != nil {
+			fmt.Printf("err check exist atm id: %s\n", info.Name)
+			continue
+		}
+		if !exist {
+			fmt.Printf("err atm id not exist: %s\n", info.Name)
+			continue
+		}
+
+		// raw, err := app.storage.Fetch(file)
+		// if err != nil {
+		// 	fmt.Printf("err fetch file: %s\n", err.Error())
+		// 	continue
+		// }
+
+		// fmt.Println(raw)
 
 		// switch ext {
 		// // case "csv":
