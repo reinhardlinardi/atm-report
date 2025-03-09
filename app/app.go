@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/reinhardlinardi/atm-report/internal/config"
+	"github.com/reinhardlinardi/atm-report/internal/storage"
 	"github.com/reinhardlinardi/atm-report/pkg/db"
 	"github.com/reinhardlinardi/atm-report/pkg/fswatch"
 )
@@ -15,12 +16,13 @@ import (
 type App struct {
 	db      db.DB
 	watcher fswatch.Watcher
+	storage storage.Storage
 	config  *config.Config
 	wg      sync.WaitGroup
 }
 
-func New(db db.DB, watcher fswatch.Watcher, config *config.Config) *App {
-	return &App{db: db, watcher: watcher, config: config}
+func New(db db.DB, watcher fswatch.Watcher, storage storage.Storage, config *config.Config) *App {
+	return &App{db: db, watcher: watcher, storage: storage, config: config}
 }
 
 func (app *App) Run(ctx context.Context, cancel context.CancelFunc, cleanup chan bool) {

@@ -29,13 +29,13 @@ type CronConfig struct {
 }
 
 func Parse(path string) (*Config, error) {
-	b, err := os.ReadFile(path)
+	raw, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
 
 	config := &Config{}
-	if err := yaml.Unmarshal(b, config); err != nil {
+	if err := yaml.Unmarshal(raw, config); err != nil {
 		return nil, err
 	}
 
