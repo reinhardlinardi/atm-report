@@ -1,8 +1,8 @@
-package dataset
+package app
 
-import "encoding/xml"
-
-type parser = func([]byte) ([]Transaction, error)
+import (
+	"encoding/xml"
+)
 
 type Transaction struct {
 	Id          string `csv:"transactionId" json:"transactionId" yaml:"transactionId" xml:"transactionId,attr"`

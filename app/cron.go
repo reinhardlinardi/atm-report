@@ -62,7 +62,7 @@ func (c *Cron) runConsumer(_ context.Context, _ context.CancelFunc, channel chan
 		if err := c.handleFile(path); err != nil {
 			fmt.Printf("err handle file: %s\n", err.Error())
 		} else {
-			fmt.Printf("%s processed\n", filepath.Base(path))
+			fmt.Printf("finished: %s\n", filepath.Base(path))
 		}
 	}
 }
