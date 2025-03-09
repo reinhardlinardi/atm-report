@@ -14,13 +14,13 @@ import (
 func main() {
 	conf, err := config.Parse(path.Join("config", "config.yaml"))
 	if err != nil {
-		fmt.Printf("err parse config: %s", err.Error())
+		fmt.Printf("err parse config: %s\n", err.Error())
 		return
 	}
 
 	app, err := initApp(conf)
 	if err != nil {
-		fmt.Printf("err init app: %s", err.Error())
+		fmt.Printf("err init app: %s\n", err.Error())
 		return
 	}
 

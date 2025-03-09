@@ -51,7 +51,7 @@ func (app *App) RunServer(ctx context.Context, cancel context.CancelFunc) {
 		err := server.ListenAndServe()
 
 		if !errors.Is(err, http.ErrServerClosed) && err != nil {
-			fmt.Printf("err server listen: %s", err.Error())
+			fmt.Printf("err server listen: %s\n", err.Error())
 			cancel()
 		}
 	}()
