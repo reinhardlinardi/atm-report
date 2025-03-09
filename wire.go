@@ -7,9 +7,9 @@ import (
 	"github.com/google/wire"
 	"github.com/reinhardlinardi/atm-report/app"
 	"github.com/reinhardlinardi/atm-report/internal/config"
-	"github.com/reinhardlinardi/atm-report/internal/repository/atmrepository"
-	"github.com/reinhardlinardi/atm-report/internal/repository/fileloadrepository"
-	"github.com/reinhardlinardi/atm-report/internal/repository/transactionrepository"
+	"github.com/reinhardlinardi/atm-report/internal/repository/atmrepo"
+	"github.com/reinhardlinardi/atm-report/internal/repository/historyrepo"
+	"github.com/reinhardlinardi/atm-report/internal/repository/transactionrepo"
 	"github.com/reinhardlinardi/atm-report/internal/storage"
 	"github.com/reinhardlinardi/atm-report/pkg/db"
 	"github.com/reinhardlinardi/atm-report/pkg/fswatch"
@@ -25,12 +25,12 @@ func initApp(config *config.Config) (*app.App, error) {
 		wire.Bind(new(fswatch.Watcher), new(*fswatch.WatcherImpl)),
 		storage.New,
 		wire.Bind(new(storage.Storage), new(*storage.StorageImpl)),
-		atmrepository.New,
-		wire.Bind(new(atmrepository.Repository), new(*atmrepository.RepositoryImpl)),
-		fileloadrepository.New,
-		wire.Bind(new(fileloadrepository.Repository), new(*fileloadrepository.RepositoryImpl)),
-		transactionrepository.New,
-		wire.Bind(new(transactionrepository.Repository), new(*transactionrepository.RepositoryImpl)),
+		atmrepo.New,
+		wire.Bind(new(atmrepo.Repository), new(*atmrepo.RepositoryImpl)),
+		historyrepo.New,
+		wire.Bind(new(historyrepo.Repository), new(*historyrepo.RepositoryImpl)),
+		transactionrepo.New,
+		wire.Bind(new(transactionrepo.Repository), new(*transactionrepo.RepositoryImpl)),
 	)
 
 	return &app.App{}, nil

@@ -13,7 +13,7 @@ type Transaction struct {
 	DestCardNum string `csv:"destinationCardNumber" json:"destinationCardNumber" yaml:"destinationCardNumber" xml:"destinationCardNumber"`
 }
 
-type XmlDoc struct {
+type XmlRoot struct {
 	XMLName xml.Name      `xml:"transactions"`
 	Data    []Transaction `xml:"transaction"`
 }

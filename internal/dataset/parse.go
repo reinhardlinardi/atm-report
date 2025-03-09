@@ -71,7 +71,7 @@ func parseYaml(raw []byte) ([]Transaction, error) {
 }
 
 func parseXml(raw []byte) ([]Transaction, error) {
-	doc := XmlDoc{}
+	doc := XmlRoot{}
 	err := xml.Unmarshal(raw, &doc)
 
 	if err != nil {

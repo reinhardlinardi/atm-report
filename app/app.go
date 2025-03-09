@@ -8,9 +8,9 @@ import (
 	"sync"
 
 	"github.com/reinhardlinardi/atm-report/internal/config"
-	"github.com/reinhardlinardi/atm-report/internal/repository/atmrepository"
-	"github.com/reinhardlinardi/atm-report/internal/repository/fileloadrepository"
-	"github.com/reinhardlinardi/atm-report/internal/repository/transactionrepository"
+	"github.com/reinhardlinardi/atm-report/internal/repository/atmrepo"
+	"github.com/reinhardlinardi/atm-report/internal/repository/historyrepo"
+	"github.com/reinhardlinardi/atm-report/internal/repository/transactionrepo"
 	"github.com/reinhardlinardi/atm-report/internal/storage"
 	"github.com/reinhardlinardi/atm-report/pkg/db"
 	"github.com/reinhardlinardi/atm-report/pkg/fswatch"
@@ -20,28 +20,28 @@ type App struct {
 	db              db.DB
 	watcher         fswatch.Watcher
 	storage         storage.Storage
-	atmRepo         atmrepository.Repository
-	fileLoadRepo    fileloadrepository.Repository
-	transactionRepo transactionrepository.Repository
+	atmRepo         atmrepo.Repository
+	historyRepo     historyrepo.Repository
+	transactionRepo transactionrepo.Repository
 	config          *config.Config
 	wg              sync.WaitGroup
 }
 
 func New(
+	config *config.Config,
 	db db.DB,
 	watcher fswatch.Watcher,
 	storage storage.Storage,
-	config *config.Config,
-	atmRepo atmrepository.Repository,
-	fileLoadRepo fileloadrepository.Repository,
-	transactionRepo transactionrepository.Repository,
+	atmRepo atmrepo.Repository,
+	historyRepo historyrepo.Repository,
+	transactionRepo transactionrepo.Repository,
 ) *App {
 	return &App{
 		db:              db,
 		watcher:         watcher,
 		storage:         storage,
 		atmRepo:         atmRepo,
-		fileLoadRepo:    fileLoadRepo,
+		historyRepo:     historyRepo,
 		transactionRepo: transactionRepo,
 		config:          config,
 	}

@@ -1,4 +1,4 @@
-package fileloadrepository
+package historyrepo
 
 type Repository interface {
 	IsExist(atmId, date string) (bool, error)

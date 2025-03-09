@@ -8,7 +8,7 @@ import (
 
 	"github.com/reinhardlinardi/atm-report/internal/dataset"
 	"github.com/reinhardlinardi/atm-report/internal/datestr"
-	"github.com/reinhardlinardi/atm-report/model"
+	"github.com/reinhardlinardi/atm-report/internal/repository/transactionrepo"
 )
 
 func (app *App) handleFile(path string) error {
@@ -55,7 +55,7 @@ func (app *App) checkSkipFile(atmId, date string) (bool, error) {
 		return true, errors.New("atm id not exist")
 	}
 
-	skip, err := app.fileLoadRepo.IsExist(atmId, date)
+	skip, err := app.historyRepo.IsExist(atmId, date)
 	if err != nil {
 		return true, errors.New("err check load history")
 	}
@@ -79,7 +79,7 @@ func (app *App) loadFile(path, atmId, date, ext string) error {
 		return fmt.Errorf("err insert data: %s", err.Error())
 	}
 
-	_, err = app.fileLoadRepo.Insert(atmId, date)
+	_, err = app.historyRepo.Insert(atmId, date)
 	if err != nil {
 		return fmt.Errorf("err insert load history: %s", err.Error())
 	}
@@ -91,18 +91,18 @@ func isExtValid(ext string) bool {
 	return ext == "csv" || ext == "json" || ext == "yaml" || ext == "xml"
 }
 
-func convertToModel(atmId string, data []dataset.Transaction) []model.Transaction {
-	res := []model.Transaction{}
+func convertToModel(atmId string, data []dataset.Transaction) []transactionrepo.Transaction {
+	res := []transactionrepo.Transaction{}
 
 	for _, item := range data {
-		res = append(res, model.Transaction{
-			AtmId:           atmId,
-			TransactionId:   item.Id,
-			TransactionDate: item.Date,
-			TransactionType: item.Type,
-			Amount:          item.Amount,
-			CardNum:         item.CardNum,
-			DestCardNum:     item.DestCardNum,
+		res = append(res, transactionrepo.Transaction{
+			AtmId:         atmId,
+			TransactionId: item.Id,
+			Date:          item.Date,
+			Type:          item.Type,
+			Amount:        item.Amount,
+			CardNum:       item.CardNum,
+			DestCardNum:   item.DestCardNum,
 		})
 	}
 

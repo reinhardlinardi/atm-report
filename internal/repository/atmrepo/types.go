@@ -1,4 +1,4 @@
-package model
+package atmrepo
 
 type Atm struct {
 	Id    int64  `db:"id"`

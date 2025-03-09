@@ -1,8 +1,12 @@
-package fileloadrepository
+package historyrepo
 
 import (
+	"fmt"
+
 	"github.com/reinhardlinardi/atm-report/pkg/db"
 )
+
+const table = "history"
 
 type RepositoryImpl struct {
 	conn db.DB
@@ -14,16 +18,18 @@ func New(conn db.DB) *RepositoryImpl {
 
 func (rp *RepositoryImpl) IsExist(atmId, date string) (bool, error) {
 	var exist bool
-	query := "SELECT EXISTS(SELECT * FROM file_load WHERE atm_id = ? AND date = ?)"
 
-	if err := rp.conn.QueryRow(&exist, query, atmId, date); err != nil {
+	query := fmt.Sprintf("SELECT EXISTS(SELECT * FROM %s WHERE atm_id = ? AND date = ?)", table)
+	err := rp.conn.QueryRow(&exist, query, atmId, date)
+
+	if err != nil {
 		return false, err
 	}
 	return exist, nil
 }
 
 func (rp *RepositoryImpl) Insert(atmId, date string) (int64, error) {
-	query := "INSERT INTO file_load VALUES (0, ?, ?)"
+	query := fmt.Sprintf("INSERT INTO %s VALUES (0, ?, ?)", table)
 	id, err := rp.conn.InsertRow(query, atmId, date)
 
 	if err != nil {
