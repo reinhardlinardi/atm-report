@@ -21,7 +21,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "localhost:8000",
-	BasePath:         "/api/v1/daily",
+	BasePath:         "",
 	Schemes:          []string{},
 	Title:            "ATM Report Service API",
 	Description:      "",

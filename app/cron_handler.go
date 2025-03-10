@@ -54,12 +54,12 @@ func (c *Cron) skipFile(atmId, date string) (bool, error) {
 }
 
 func (c *Cron) loadFile(path, atmId, date, ext string) error {
-	raw, err := c.storage.Fetch(path)
+	bytes, err := c.storage.Fetch(path)
 	if err != nil {
 		return fmt.Errorf("err fetch file: %s", err.Error())
 	}
 
-	data, err := parseFile(raw, atmId, ext)
+	data, err := parseFile(bytes, atmId, ext)
 	if err != nil {
 		return fmt.Errorf("err parse file: %s", err.Error())
 	}
@@ -77,7 +77,7 @@ func (c *Cron) loadFile(path, atmId, date, ext string) error {
 	return nil
 }
 
-func parseFile(raw []byte, atmId, ext string) ([]transactionrepo.Transaction, error) {
+func parseFile(bytes []byte, atmId, ext string) ([]transactionrepo.Transaction, error) {
 	data := []Transaction{}
 	res := []transactionrepo.Transaction{}
 
@@ -86,13 +86,13 @@ func parseFile(raw []byte, atmId, ext string) ([]transactionrepo.Transaction, er
 
 	switch ext {
 	case "csv":
-		err = gocsv.UnmarshalBytes(raw, &data)
+		err = gocsv.UnmarshalBytes(bytes, &data)
 	case "json":
-		err = json.Unmarshal(raw, &data)
+		err = json.Unmarshal(bytes, &data)
 	case "yaml":
-		err = yaml.Unmarshal(raw, &data)
+		err = yaml.Unmarshal(bytes, &data)
 	case "xml":
-		err = xml.Unmarshal(raw, &doc)
+		err = xml.Unmarshal(bytes, &doc)
 	}
 
 	if err != nil {

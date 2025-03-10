@@ -43,3 +43,43 @@ func (rp *RepositoryImpl) InsertRows(data []Transaction) (int64, error) {
 	}
 	return rows, nil
 }
+
+func (rp *RepositoryImpl) CountDaily() ([]DailyCount, error) {
+	res := []DailyCount{}
+	query := fmt.Sprintf("SELECT date, COUNT(*) as count FROM %s GROUP BY date", table)
+
+	if err := rp.conn.Query(&res, query); err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (rp *RepositoryImpl) CountByType() ([]ByTypeCount, error) {
+	res := []ByTypeCount{}
+	query := fmt.Sprintf("SELECT type, COUNT(*) as count FROM %s GROUP BY type", table)
+
+	if err := rp.conn.Query(&res, query); err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (rp *RepositoryImpl) CountDailyByType() ([]DailyByTypeCount, error) {
+	res := []DailyByTypeCount{}
+	query := fmt.Sprintf("SELECT date, type, COUNT(*) as count FROM %s GROUP BY date, type", table)
+
+	if err := rp.conn.Query(&res, query); err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (rp *RepositoryImpl) MaxWithdrawDaily() ([]DailyMaxWithdraw, error) {
+	res := []DailyMaxWithdraw{}
+	query := fmt.Sprintf("SELECT date, atm_id, MAX(amount) as amount FROM %s GROUP BY date", table)
+
+	if err := rp.conn.Query(&res, query); err != nil {
+		return nil, err
+	}
+	return res, nil
+}

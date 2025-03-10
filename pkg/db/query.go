@@ -15,7 +15,7 @@ func (db *DBImpl) InsertRow(query string, args ...any) (int64, error) {
 }
 
 func (db *DBImpl) Query(dest any, query string, args ...any) error {
-	return db.conn.Select(dest, query, args)
+	return db.conn.Select(dest, query, args...)
 }
 
 func (db *DBImpl) Exec(query string, args ...any) (int64, error) {

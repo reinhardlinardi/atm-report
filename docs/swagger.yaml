@@ -1,4 +1,3 @@
-basePath: /api/v1/daily
 host: localhost:8000
 info:
   contact: {}
