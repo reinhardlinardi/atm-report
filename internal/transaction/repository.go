@@ -65,7 +65,7 @@ func (r *RepositoryImpl) CountDailyByType() ([]DailyTypeCount, error) {
 func (r *RepositoryImpl) GetDailyMaxWithdraw() ([]DailyMaxWithdraw, error) {
 	res := []DailyMaxWithdraw{}
 
-	query := `SELECT t1.date, t1.atm_id, t1.amount FROM %s t1 JOIN 
+	query := `SELECT t1.date, t1.atm_id, t1.transaction_id, t1.amount FROM %s t1 JOIN 
 		(SELECT date, MAX(amount) AS max_amount FROM %s WHERE type = 0 GROUP BY date) t2
 		ON t1.date = t2.date WHERE t1.amount = t2.max_amount`
 

@@ -32,7 +32,8 @@ type DailyTypeCount struct {
 }
 
 type DailyMaxWithdraw struct {
-	Date   string `db:"date" json:"date"`
-	AtmId  string `db:"atm_id" json:"atm_id"`
-	Amount int    `db:"amount" json:"amount"`
+	Date          string `db:"date" json:"date"`
+	AtmId         string `db:"atm_id" json:"atm_id"`
+	TransactionId string `db:"transaction_id" json:"transaction_id"`
+	Amount        int    `db:"amount" json:"amount"`
 }
