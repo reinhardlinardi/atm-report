@@ -16,4 +16,6 @@ gen:
 	wire
 
 doc:
-	swag init -d app/server -g handler.go
+	swag fmt
+	swag init --parseDependency --parseInternal -d app/server -g handler.go
+	go build

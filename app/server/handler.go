@@ -13,9 +13,9 @@ import (
 
 //	@title			ATM Report API
 //	@version		1.0
-//	@description	ATM report service server
+//	@description	ATM report service API server
 //	@host			localhost:8000
-//	@BasePath		/api/v1
+//	@BasePath		/api/v1/daily
 
 func (server *Server) RegisterHandlers() {
 	r := server.router
@@ -40,8 +40,9 @@ func (server *Server) RegisterHandlers() {
 //	@Description	Get number of transactions per day
 //	@Tags			Count
 //	@Produce		json
-//	@Success		200	{array} transaction.DailyCount
-//	@Router			/api/v1/daily/count [get]
+//	@Success		200	{object}	[]transaction.DailyCount
+//	@Failure		500	{object}	httpjson.Response
+//	@Router			/count [get]
 func (server *Server) countDaily(w http.ResponseWriter, r *http.Request) {
 	data, err := server.transaction.CountDaily()
 	if err != nil {
@@ -53,6 +54,15 @@ func (server *Server) countDaily(w http.ResponseWriter, r *http.Request) {
 	httpjson.OK(w, data)
 }
 
+// countDailyByType godoc
+//
+//	@Summary		Count daily transactions per type
+//	@Description	Get number of transactions per day per transaction type
+//	@Tags			Count
+//	@Produce		json
+//	@Success		200	{object}	[]transaction.DailyTypeCount
+//	@Failure		500	{object}	httpjson.Response
+//	@Router			/count/type [get]
 func (server *Server) countDailyByType(w http.ResponseWriter, r *http.Request) {
 	data, err := server.transaction.CountDailyByType()
 	if err != nil {
@@ -64,6 +74,15 @@ func (server *Server) countDailyByType(w http.ResponseWriter, r *http.Request) {
 	httpjson.OK(w, data)
 }
 
+// countDailyAll godoc
+//
+//	@Summary		Count daily transactions, with count per type
+//	@Description	Get number of transactions per day, and number of transactions per day per type
+//	@Tags			Count
+//	@Produce		json
+//	@Success		200	{object}	DailyAllResponse
+//	@Failure		500	{object}	httpjson.Response
+//	@Router			/count/all [get]
 func (server *Server) countDailyAll(w http.ResponseWriter, r *http.Request) {
 	data, err := server.transaction.CountDailyByType()
 	if err != nil {
@@ -81,6 +100,15 @@ func (server *Server) countDailyAll(w http.ResponseWriter, r *http.Request) {
 	httpjson.OK(w, res)
 }
 
+// getDailyMaxWithdraw godoc
+//
+//	@Summary		ATM with max withdraw per day
+//	@Description	Get ATM with max withdraw amount per day
+//	@Tags			Max
+//	@Produce		json
+//	@Success		200	{object}	[]transaction.DailyMaxWithdraw
+//	@Failure		500	{object}	httpjson.Response
+//	@Router			/max/withdraw [get]
 func (server *Server) getDailyMaxWithdraw(w http.ResponseWriter, r *http.Request) {
 	data, err := server.transaction.GetDailyMaxWithdraw()
 	if err != nil {

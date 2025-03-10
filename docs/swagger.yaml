@@ -1,22 +1,131 @@
-basePath: /api/v1
+basePath: /api/v1/daily
+definitions:
+  httpjson.Response:
+    properties:
+      data: {}
+      msg:
+        type: string
+      ok:
+        type: boolean
+    type: object
+  server.DailyAllResponse:
+    properties:
+      detail:
+        items:
+          $ref: '#/definitions/transaction.DailyTypeCount'
+        type: array
+      total:
+        items:
+          $ref: '#/definitions/transaction.DailyCount'
+        type: array
+    type: object
+  transaction.DailyCount:
+    properties:
+      count:
+        type: integer
+      date:
+        type: string
+    type: object
+  transaction.DailyMaxWithdraw:
+    properties:
+      amount:
+        type: integer
+      atm_id:
+        type: string
+      date:
+        type: string
+      transaction_id:
+        type: string
+    type: object
+  transaction.DailyTypeCount:
+    properties:
+      count:
+        type: integer
+      date:
+        type: string
+      type:
+        type: integer
+    type: object
 host: localhost:8000
 info:
   contact: {}
-  description: ATM report service server
+  description: ATM report service API server
   title: ATM Report API
   version: "1.0"
 paths:
-  /api/v1/daily/count:
+  /count:
     get:
       description: Get number of transactions per day
       produces:
       - application/json
       responses:
         "200":
-          description: pong
+          description: OK
           schema:
-            type: string
+            items:
+              $ref: '#/definitions/transaction.DailyCount'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpjson.Response'
       summary: Count daily transactions
       tags:
-      - tags
+      - Count
+  /count/all:
+    get:
+      description: Get number of transactions per day, and number of transactions
+        per day per type
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/server.DailyAllResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpjson.Response'
+      summary: Count daily transactions, with count per type
+      tags:
+      - Count
+  /count/type:
+    get:
+      description: Get number of transactions per day per transaction type
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/transaction.DailyTypeCount'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpjson.Response'
+      summary: Count daily transactions per type
+      tags:
+      - Count
+  /max/withdraw:
+    get:
+      description: Get ATM with max withdraw amount per day
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/transaction.DailyMaxWithdraw'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpjson.Response'
+      summary: ATM with max withdraw per day
+      tags:
+      - Max
 swagger: "2.0"
