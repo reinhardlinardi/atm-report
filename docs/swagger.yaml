@@ -1,0 +1,8 @@
+basePath: /api/v1/daily
+host: localhost:8000
+info:
+  contact: {}
+  title: ATM Report Service API
+  version: "1.0"
+paths: {}
+swagger: "2.0"
