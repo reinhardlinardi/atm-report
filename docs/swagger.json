@@ -1,10 +1,33 @@
 {
     "swagger": "2.0",
     "info": {
-        "title": "ATM Report Service API",
+        "description": "ATM report service server",
+        "title": "ATM Report API",
         "contact": {},
         "version": "1.0"
     },
     "host": "localhost:8000",
-    "paths": {}
+    "basePath": "/api/v1",
+    "paths": {
+        "/api/v1/daily/count": {
+            "get": {
+                "description": "Get number of transactions per day",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tags"
+                ],
+                "summary": "Count daily transactions",
+                "responses": {
+                    "200": {
+                        "description": "pong",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

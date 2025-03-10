@@ -1,7 +1,22 @@
+basePath: /api/v1
 host: localhost:8000
 info:
   contact: {}
-  title: ATM Report Service API
+  description: ATM report service server
+  title: ATM Report API
   version: "1.0"
-paths: {}
+paths:
+  /api/v1/daily/count:
+    get:
+      description: Get number of transactions per day
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: pong
+          schema:
+            type: string
+      summary: Count daily transactions
+      tags:
+      - tags
 swagger: "2.0"

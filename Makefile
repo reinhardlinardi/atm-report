@@ -1,3 +1,4 @@
+.PHONY: setup dev tidy gen doc
 all: dev
 
 setup:
@@ -6,6 +7,13 @@ setup:
 	go build
 
 dev:
-	wire
 	go build
+
+tidy:
 	go mod tidy
+
+gen:
+	wire
+
+doc:
+	swag init -d app/server -g handler.go
