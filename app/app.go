@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/reinhardlinardi/atm-report/app/cron"
+	"github.com/reinhardlinardi/atm-report/app/server"
 	"github.com/reinhardlinardi/atm-report/internal/config"
 	"github.com/reinhardlinardi/atm-report/pkg/db"
 )
@@ -12,15 +14,15 @@ import (
 type App struct {
 	config *config.Config
 	wg     sync.WaitGroup
-	cron   *Cron
-	server *Server
+	cron   *cron.Cron
+	server *server.Server
 	db     db.DB
 }
 
 func New(
 	config *config.Config,
-	cron *Cron,
-	server *Server,
+	cron *cron.Cron,
+	server *server.Server,
 	db db.DB,
 ) *App {
 	return &App{

@@ -1,4 +1,4 @@
-package historyrepo
+package history
 
 type Repository interface {
 	IsExist(atmId, date string) (bool, error)

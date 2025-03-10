@@ -1,16 +1,12 @@
-package app
+package cron
 
 import (
-	"encoding/json"
-	"encoding/xml"
 	"errors"
 	"fmt"
 	"path/filepath"
 	"strings"
 
-	"github.com/gocarina/gocsv"
-	"github.com/reinhardlinardi/atm-report/internal/repository/transactionrepo"
-	"gopkg.in/yaml.v3"
+	transactiondb "github.com/reinhardlinardi/atm-report/internal/transaction"
 )
 
 func (c *Cron) handleFile(path string) error {
@@ -19,10 +15,12 @@ func (c *Cron) handleFile(path string) error {
 	ext := filepath.Ext(path)[1:]
 
 	name := strings.Split(filename, ".")[0]
+
 	parts := strings.Split(name, "_")
 	atmId := parts[0]
 	date := parts[1]
 
+	// File processing
 	skip, err := c.skipFile(atmId, date)
 	if err != nil {
 		return fmt.Errorf("err check skip file: %s: %s", err.Error(), filename)
@@ -37,15 +35,7 @@ func (c *Cron) handleFile(path string) error {
 }
 
 func (c *Cron) skipFile(atmId, date string) (bool, error) {
-	exist, err := c.atmRepo.IsExist(atmId)
-	if err != nil {
-		return true, errors.New("err check atm id")
-	}
-	if !exist {
-		return true, errors.New("atm id not exist")
-	}
-
-	skip, err := c.historyRepo.IsExist(atmId, date)
+	skip, err := c.historyDB.IsExist(atmId, date)
 	if err != nil {
 		return true, errors.New("err check load history")
 	}
@@ -64,12 +54,12 @@ func (c *Cron) loadFile(path, atmId, date, ext string) error {
 		return fmt.Errorf("err parse file: %s", err.Error())
 	}
 
-	_, err = c.transactionRepo.InsertRows(data)
+	_, err = c.transactionDB.Load(data)
 	if err != nil {
 		return fmt.Errorf("err insert data: %s", err.Error())
 	}
 
-	_, err = c.historyRepo.Insert(atmId, date)
+	_, err = c.historyDB.Insert(atmId, date)
 	if err != nil {
 		return fmt.Errorf("err insert load history: %s", err.Error())
 	}
@@ -77,44 +67,23 @@ func (c *Cron) loadFile(path, atmId, date, ext string) error {
 	return nil
 }
 
-func parseFile(bytes []byte, atmId, ext string) ([]transactionrepo.Transaction, error) {
-	data := []Transaction{}
-	res := []transactionrepo.Transaction{}
-
-	var doc XmlRoot
+func parseFile(bytes []byte, atmId, ext string) ([]transactiondb.Transaction, error) {
 	var err error
+	data := []transactiondb.Transaction{}
 
-	switch ext {
-	case "csv":
-		err = gocsv.UnmarshalBytes(bytes, &data)
-	case "json":
-		err = json.Unmarshal(bytes, &data)
-	case "yaml":
-		err = yaml.Unmarshal(bytes, &data)
-	case "xml":
-		err = xml.Unmarshal(bytes, &doc)
+	if ext == "xml" {
+		doc := transactiondb.Transactions{}
+		err = parser[ext](bytes, &doc)
+		data = doc.List
+	} else {
+		err = parser[ext](bytes, &data)
 	}
 
 	if err != nil {
 		return nil, err
 	}
-	if ext == "xml" {
-		data = doc.Data
+	for idx := range data {
+		data[idx].AtmId = atmId
 	}
-
-	for _, item := range data {
-		t := transactionrepo.Transaction{}
-
-		t.AtmId = atmId
-		t.TransactionId = item.Id
-		t.Date = item.Date
-		t.Type = item.Type
-		t.Amount = item.Amount
-		t.CardNum = item.CardNum
-		t.DestCardNum = item.DestCardNum
-
-		res = append(res, t)
-	}
-
-	return res, nil
+	return data, nil
 }

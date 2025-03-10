@@ -1,4 +1,4 @@
-package transactionrepo
+package transaction
 
 import (
 	"fmt"
@@ -6,8 +6,6 @@ import (
 
 	"github.com/reinhardlinardi/atm-report/pkg/db"
 )
-
-const table = "transaction"
 
 type RepositoryImpl struct {
 	conn db.DB
@@ -17,7 +15,7 @@ func New(conn db.DB) *RepositoryImpl {
 	return &RepositoryImpl{conn: conn}
 }
 
-func (rp *RepositoryImpl) InsertRows(data []Transaction) (int64, error) {
+func (r *RepositoryImpl) Load(data []Transaction) (int64, error) {
 	if len(data) == 0 {
 		return 0, nil
 	}
@@ -36,7 +34,7 @@ func (rp *RepositoryImpl) InsertRows(data []Transaction) (int64, error) {
 	}
 
 	query := sb.String()
-	rows, err := rp.conn.Exec(query, args...)
+	rows, err := r.conn.Exec(query, args...)
 
 	if err != nil {
 		return 0, err
@@ -44,47 +42,36 @@ func (rp *RepositoryImpl) InsertRows(data []Transaction) (int64, error) {
 	return rows, nil
 }
 
-func (rp *RepositoryImpl) CountDaily() ([]DailyCount, error) {
+func (r *RepositoryImpl) CountDaily() ([]DailyCount, error) {
 	res := []DailyCount{}
 	query := fmt.Sprintf("SELECT date, COUNT(*) as count FROM %s GROUP BY date", table)
 
-	if err := rp.conn.Query(&res, query); err != nil {
+	if err := r.conn.Query(&res, query); err != nil {
 		return nil, err
 	}
 	return res, nil
 }
 
-func (rp *RepositoryImpl) CountByType() ([]ByTypeCount, error) {
-	res := []ByTypeCount{}
-	query := fmt.Sprintf("SELECT type, COUNT(*) as count FROM %s GROUP BY type", table)
-
-	if err := rp.conn.Query(&res, query); err != nil {
-		return nil, err
-	}
-	return res, nil
-}
-
-func (rp *RepositoryImpl) CountDailyByType() ([]DailyByTypeCount, error) {
-	res := []DailyByTypeCount{}
+func (r *RepositoryImpl) CountDailyByType() ([]DailyTypeCount, error) {
+	res := []DailyTypeCount{}
 	query := fmt.Sprintf("SELECT date, type, COUNT(*) as count FROM %s GROUP BY date, type", table)
 
-	if err := rp.conn.Query(&res, query); err != nil {
+	if err := r.conn.Query(&res, query); err != nil {
 		return nil, err
 	}
 	return res, nil
 }
 
-func (rp *RepositoryImpl) MaxWithdrawDaily() ([]DailyMaxWithdraw, error) {
+func (r *RepositoryImpl) GetDailyMaxWithdraw() ([]DailyMaxWithdraw, error) {
 	res := []DailyMaxWithdraw{}
 
-	query := `SELECT t1.date, t1.atm_id, t1.amount FROM %s t1 
-		JOIN (SELECT date, MAX(amount) AS max_amount FROM %s WHERE type = 0 GROUP BY date) t2
-		ON t1.date = t2.date
-		WHERE t1.amount = t2.max_amount`
+	query := `SELECT t1.date, t1.atm_id, t1.amount FROM %s t1 JOIN 
+		(SELECT date, MAX(amount) AS max_amount FROM %s WHERE type = 0 GROUP BY date) t2
+		ON t1.date = t2.date WHERE t1.amount = t2.max_amount`
 
 	query = fmt.Sprintf(query, table, table)
 
-	if err := rp.conn.Query(&res, query); err != nil {
+	if err := r.conn.Query(&res, query); err != nil {
 		return nil, err
 	}
 	return res, nil

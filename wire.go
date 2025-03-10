@@ -6,11 +6,12 @@ package main
 import (
 	"github.com/google/wire"
 	"github.com/reinhardlinardi/atm-report/app"
+	"github.com/reinhardlinardi/atm-report/app/cron"
+	"github.com/reinhardlinardi/atm-report/app/server"
 	"github.com/reinhardlinardi/atm-report/internal/config"
-	"github.com/reinhardlinardi/atm-report/internal/repository/atmrepo"
-	"github.com/reinhardlinardi/atm-report/internal/repository/historyrepo"
-	"github.com/reinhardlinardi/atm-report/internal/repository/transactionrepo"
+	"github.com/reinhardlinardi/atm-report/internal/history"
 	"github.com/reinhardlinardi/atm-report/internal/storage"
+	"github.com/reinhardlinardi/atm-report/internal/transaction"
 	"github.com/reinhardlinardi/atm-report/pkg/db"
 	"github.com/reinhardlinardi/atm-report/pkg/fswatch"
 )
@@ -18,8 +19,8 @@ import (
 func initApp(conf *config.Config, dbConf *db.Config) (*app.App, error) {
 	wire.Build(
 		app.New,
-		app.NewServer,
-		app.NewCron,
+		server.New,
+		cron.New,
 		wire.FieldsOf(new(*config.Config), "Server"),
 		wire.FieldsOf(new(*config.Config), "Cron"),
 		db.New,
@@ -28,12 +29,10 @@ func initApp(conf *config.Config, dbConf *db.Config) (*app.App, error) {
 		wire.Bind(new(fswatch.Watcher), new(*fswatch.WatcherImpl)),
 		storage.New,
 		wire.Bind(new(storage.Storage), new(*storage.StorageImpl)),
-		atmrepo.New,
-		wire.Bind(new(atmrepo.Repository), new(*atmrepo.RepositoryImpl)),
-		historyrepo.New,
-		wire.Bind(new(historyrepo.Repository), new(*historyrepo.RepositoryImpl)),
-		transactionrepo.New,
-		wire.Bind(new(transactionrepo.Repository), new(*transactionrepo.RepositoryImpl)),
+		history.New,
+		wire.Bind(new(history.Repository), new(*history.RepositoryImpl)),
+		transaction.New,
+		wire.Bind(new(transaction.Repository), new(*transaction.RepositoryImpl)),
 	)
 
 	return &app.App{}, nil
