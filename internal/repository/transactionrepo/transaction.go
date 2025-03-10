@@ -76,7 +76,13 @@ func (rp *RepositoryImpl) CountDailyByType() ([]DailyByTypeCount, error) {
 
 func (rp *RepositoryImpl) MaxWithdrawDaily() ([]DailyMaxWithdraw, error) {
 	res := []DailyMaxWithdraw{}
-	query := fmt.Sprintf("SELECT date, atm_id, MAX(amount) as amount FROM %s GROUP BY date", table)
+
+	query := `SELECT t1.date, t1.atm_id, t1.amount FROM %s t1 
+		JOIN (SELECT date, MAX(amount) AS max_amount FROM %s WHERE type = 0 GROUP BY date) t2
+		ON t1.date = t2.date
+		WHERE t1.amount = t2.max_amount`
+
+	query = fmt.Sprintf(query, table, table)
 
 	if err := rp.conn.Query(&res, query); err != nil {
 		return nil, err
