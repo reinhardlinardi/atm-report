@@ -1,6 +1,7 @@
 package db
 
 import (
+	"errors"
 	"fmt"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -31,6 +32,9 @@ func (db *DBImpl) Connect() error {
 	conn, err := sqlx.Connect("mysql", dsn)
 	if err != nil {
 		return err
+	}
+	if conn == nil {
+		return errors.New("connect db failed")
 	}
 
 	db.conn = conn

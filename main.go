@@ -18,7 +18,10 @@ func main() {
 		return
 	}
 
-	app, err := initApp(conf)
+	dbConf := &db.Config{User: conf.DB.User, Pass: conf.DB.Pass,
+		Host: conf.DB.Host, Port: conf.DB.Port, Schema: conf.DB.Schema}
+
+	app, err := initApp(conf, dbConf)
 	if err != nil {
 		fmt.Printf("err init app: %s\n", err.Error())
 		return
@@ -42,14 +45,4 @@ func main() {
 	cancel()
 
 	<-cleanup
-}
-
-func dbConfig(conf *config.Config) *db.Config {
-	return &db.Config{
-		User:   conf.DB.User,
-		Pass:   conf.DB.Pass,
-		Host:   conf.DB.Host,
-		Port:   conf.DB.Port,
-		Schema: conf.DB.Schema,
-	}
 }

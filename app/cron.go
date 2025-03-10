@@ -14,7 +14,7 @@ import (
 )
 
 type Cron struct {
-	config          *config.Config
+	config          *config.CronConfig
 	watcher         fswatch.Watcher
 	storage         storage.Storage
 	atmRepo         atmrepo.Repository
@@ -23,7 +23,7 @@ type Cron struct {
 }
 
 func NewCron(
-	config *config.Config,
+	config *config.CronConfig,
 	watcher fswatch.Watcher,
 	storage storage.Storage,
 	atmRepo atmrepo.Repository,
@@ -48,7 +48,7 @@ func (c *Cron) Run(ctx context.Context, cancel context.CancelFunc) {
 }
 
 func (c *Cron) runWatcher(ctx context.Context, cancel context.CancelFunc, channel chan string) {
-	err := c.watcher.WatchCreated(ctx, c.config.Cron.Path, channel)
+	err := c.watcher.WatchCreated(ctx, c.config.Path, channel)
 
 	if err != nil {
 		fmt.Printf("err watcher: %s\n", err.Error())

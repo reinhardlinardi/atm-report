@@ -15,13 +15,14 @@ import (
 	"github.com/reinhardlinardi/atm-report/pkg/fswatch"
 )
 
-func initApp(config *config.Config) (*app.App, error) {
+func initApp(conf *config.Config, dbConf *db.Config) (*app.App, error) {
 	wire.Build(
 		app.New,
 		app.NewServer,
 		app.NewCron,
+		wire.FieldsOf(new(*config.Config), "Server"),
+		wire.FieldsOf(new(*config.Config), "Cron"),
 		db.New,
-		dbConfig,
 		wire.Bind(new(db.DB), new(*db.DBImpl)),
 		fswatch.New,
 		wire.Bind(new(fswatch.Watcher), new(*fswatch.WatcherImpl)),

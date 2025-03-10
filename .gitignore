@@ -285,3 +285,6 @@ dataset/*
 
 # Config file
 config/config.yaml
+
+# Docs (temp)
+docs

@@ -12,14 +12,14 @@ import (
 )
 
 type Server struct {
-	config          *config.Config
+	config          *config.ServerConfig
 	http            *http.Server
 	router          *chi.Mux
 	transactionRepo transactionrepo.Repository
 }
 
-func NewServer(config *config.Config, transactionRepo transactionrepo.Repository) *Server {
-	addr := fmt.Sprintf(":%d", config.Server.Port)
+func NewServer(config *config.ServerConfig, transactionRepo transactionrepo.Repository) *Server {
+	addr := fmt.Sprintf(":%d", config.Port)
 	router := chi.NewRouter()
 
 	server := &http.Server{Addr: addr, Handler: router}
@@ -27,7 +27,7 @@ func NewServer(config *config.Config, transactionRepo transactionrepo.Repository
 }
 
 func (srv *Server) Run(ctx context.Context, cancel context.CancelFunc) {
-	fmt.Printf("Listening on :%d\n", srv.config.Server.Port)
+	fmt.Printf("Listening on :%d\n", srv.config.Port)
 	err := srv.http.ListenAndServe()
 
 	if !errors.Is(err, http.ErrServerClosed) && err != nil {
@@ -38,13 +38,4 @@ func (srv *Server) Run(ctx context.Context, cancel context.CancelFunc) {
 
 func (srv *Server) Shutdown(ctx context.Context) {
 	srv.http.Shutdown(ctx)
-}
-
-func (srv *Server) RegisterHandlers() {
-	r := srv.router
-
-	r.Route("/api/v1/daily", func(r chi.Router) {
-		r.Get("/transaction-count", countTransactionHandler)
-		r.Get("/max-withdraw", maxWithdrawHandler)
-	})
 }

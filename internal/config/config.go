@@ -28,6 +28,18 @@ type CronConfig struct {
 	Path string `yaml:"path"`
 }
 
+func NewServerConfig() *ServerConfig {
+	return &ServerConfig{}
+}
+
+func NewDBConfig() *DBConfig {
+	return &DBConfig{}
+}
+
+func NewCronConfig() *CronConfig {
+	return &CronConfig{}
+}
+
 func Parse(path string) (*Config, error) {
 	raw, err := os.ReadFile(path)
 	if err != nil {
