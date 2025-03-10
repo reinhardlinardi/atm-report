@@ -6,28 +6,20 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	_ "github.com/reinhardlinardi/atm-report/docs"
+	"github.com/reinhardlinardi/atm-report/internal/httpjson"
 	"github.com/reinhardlinardi/atm-report/internal/transaction"
-	"github.com/reinhardlinardi/atm-report/pkg/httpjson"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
-// @title ATM Report Service API
-// @version 1.0
-
-// @Host localhost:8000
-// @BasePath /api/v1
+//	@title			ATM Report API
+//	@version		1.0
+//	@description	ATM report service server
+//	@host			localhost:8000
+//	@BasePath		/api/v1
 
 func (server *Server) RegisterHandlers() {
 	r := server.router
-
-	r.Handle("/docs/*", http.StripPrefix(
-		"/docs/",
-		http.FileServer(http.Dir("./docs")),
-	))
-
-	url := fmt.Sprintf("http://localhost:%d/docs/swagger.json", server.config.Port)
-	r.Get("/swagger/*", httpSwagger.Handler(httpSwagger.URL(url)))
-	// r.Get("/swagger/*", httpSwagger.WrapHandler)
+	r.Get("/swagger/*", httpSwagger.WrapHandler)
 
 	r.Route("/api/v1/daily", func(r chi.Router) {
 		r.Route("/count", func(r chi.Router) {
@@ -42,26 +34,34 @@ func (server *Server) RegisterHandlers() {
 	})
 }
 
+// countDaily godoc
+//
+//	@Summary		Count daily transactions
+//	@Description	Get number of transactions per day
+//	@Tags			Count
+//	@Produce		json
+//	@Success		200	{array} transaction.DailyCount
+//	@Router			/api/v1/daily/count [get]
 func (server *Server) countDaily(w http.ResponseWriter, r *http.Request) {
-	res, err := server.transaction.CountDaily()
+	data, err := server.transaction.CountDaily()
 	if err != nil {
 		fmt.Printf("err count daily: %s\n", err.Error())
 		httpjson.InternalError(w, nil)
 		return
 	}
 
-	httpjson.OK(w, res)
+	httpjson.OK(w, data)
 }
 
 func (server *Server) countDailyByType(w http.ResponseWriter, r *http.Request) {
-	res, err := server.transaction.CountDailyByType()
+	data, err := server.transaction.CountDailyByType()
 	if err != nil {
 		fmt.Printf("err count daily by type: %s\n", err.Error())
 		httpjson.InternalError(w, nil)
 		return
 	}
 
-	httpjson.OK(w, res)
+	httpjson.OK(w, data)
 }
 
 func (server *Server) countDailyAll(w http.ResponseWriter, r *http.Request) {
@@ -82,14 +82,14 @@ func (server *Server) countDailyAll(w http.ResponseWriter, r *http.Request) {
 }
 
 func (server *Server) getDailyMaxWithdraw(w http.ResponseWriter, r *http.Request) {
-	res, err := server.transaction.GetDailyMaxWithdraw()
+	data, err := server.transaction.GetDailyMaxWithdraw()
 	if err != nil {
 		fmt.Printf("err get daily max withdraw: %s\n", err.Error())
 		httpjson.InternalError(w, nil)
 		return
 	}
 
-	httpjson.OK(w, res)
+	httpjson.OK(w, data)
 }
 
 func getTotalCount(data []transaction.DailyTypeCount) []transaction.DailyCount {
