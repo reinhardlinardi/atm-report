@@ -1,9 +1,9 @@
 # ATM report service dataset generator
 #
-# cmd args: <number of days> <number of ATM> <max number of transactions per ATM>
+# cmd args: <# of days> <# of ATM> <max files per ATM> <max transactions per ATM>
 #
 # ATM data directory: gen
-# ATM data filename: {id}_YYYYMMDD.{ext}
+# ATM data filename: {id}_YYYYMMDD_{seq}.{ext}
 # ATM data file ext: .csv/json/yaml/xml
 #
 # Transaction data:
@@ -35,6 +35,7 @@ EXT = [CSV, JSON, YAML, XML]
 
 MAX_DAYS = 7
 MAX_ATM = 8
+MAX_FILES = 5
 MAX_TX = 10
 
 TYPE_WITHDRAW = 0
@@ -59,7 +60,8 @@ class Args:
     def __init__(self, argv):
         self.days = int(argv[1])
         self.atm = int(argv[2])
-        self.max_tx = int(argv[3])
+        self.max_files = int(argv[3])
+        self.max_tx = int(argv[4])
 
 class Tx:
     def __init__(self):
@@ -121,7 +123,7 @@ def generate(cnt, date):
     return gen
 
 def parseargs():
-    num_args = 3
+    num_args = 4
 
     if not len(sys.argv) == num_args+1:
         return None, err('invalid number of cmd args, expect {}'.format(num_args))
@@ -130,7 +132,9 @@ def parseargs():
     if not sys.argv[2].isdigit():
         return None, err('invalid number of ATM')
     if not sys.argv[3].isdigit():
-        return None, err('invalid max number of transactions per ATM')
+        return None, err('invalid max files per ATM')
+    if not sys.argv[4].isdigit():
+        return None, err('invalid max transactions per ATM')
     
     args = Args(sys.argv)
 
@@ -138,13 +142,17 @@ def parseargs():
         return None, err('max number of days is {}'.format(MAX_DAYS))
     if args.atm > MAX_ATM:
         return None, err('max number of ATM is {}'.format(MAX_ATM))
+    if args.atm > MAX_FILES:
+        return None, err('max files per ATM is {}'.format(MAX_FILES))
     if args.max_tx > MAX_TX:
-        return None, err('max number of transactions per ATM is {}'.format(MAX_TX))
+        return None, err('max transactions per ATM is {}'.format(MAX_TX))
     
     if args.days == 0:
         args.days = random.randint(1, MAX_DAYS)
     if args.atm == 0:
         args.atm = random.randint(1, MAX_ATM)
+    if args.max_files == 0:
+        args.max_files = random.randint(1, MAX_FILES)
     if args.max_tx == 0:
         args.max_tx = random.randint(1, MAX_TX)
 
@@ -229,26 +237,27 @@ def main():
         date = today - timedelta(days = d)
 
         for a in range(0, args.atm):
-            id = chr(ord('A') + a)
+            for seq in range(1, args.max_files):
+                id = chr(ord('A') + a)
             
-            ext = EXT[a % len(EXT)]
-            name = '{}_{}.{}'.format(id, date.strftime(FILENAME_FORMAT), ext)
-            path = os.path.join(dir, name)
-
-            num_tx = random.randint(0, args.max_tx)
-            gen = generate(num_tx, date)
-
-            if ext == XML:
-                with open(path, 'wb') as f:
-                    write_xml(gen, f)
+                ext = EXT[a % len(EXT)]
+                name = '{}_{}_{}.{}'.format(id, date.strftime(FILENAME_FORMAT), seq, ext)
+                path = os.path.join(dir, name)
             
-            else:
-                with open(path, 'w') as f:
-                    if ext == CSV:
-                        write_csv(gen, f)
-                    if ext == JSON:
-                        write_json(gen, f)
-                    if ext == YAML:
-                        write_yaml(gen, f)
+                num_tx = random.randint(1, args.max_tx)
+                gen = generate(num_tx, date)
+
+                if ext == XML:
+                    with open(path, 'wb') as f:
+                        write_xml(gen, f)
+                
+                else:
+                    with open(path, 'w') as f:
+                        if ext == CSV:
+                            write_csv(gen, f)
+                        if ext == JSON:
+                            write_json(gen, f)
+                        if ext == YAML:
+                            write_yaml(gen, f)
                 
 main()

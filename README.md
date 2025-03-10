@@ -35,11 +35,7 @@ Reports to expose via APIs:
 
 1. Open terminal
 2. Navigate to script directory
-3. Run dataset generator
-```bash
-# Example
-python3 gen.py 2 4 0
-```
+3. Run dataset generator, e.g. `python3 gen.py 2 4 3 5`
 
 ### DB
 
@@ -50,23 +46,20 @@ CREATE SCHEMA `atm_report`;
 ```
 3. Migrate tables
 ```bash
-# Replace migrations path, user, and pass in this command
-./migrate -path migrations/path -database 'mysql://user:pass@tcp(localhost:3306)/atm_report' up
+# Replace path, user, and pass in this command
+./migrate -path migrations -database 'mysql://user:pass@tcp(localhost:3306)/atm_report' up
 ```
 
 ### App
-`make build`
+Run `make build`
 
 ## Run
 
 ### App
-`./atm-report`
+Run `./atm-report`
 
 ### Producer
 1. Open terminal
 2. Navigate to script directory
-3. Run
-```bash
-python3 send.py
-```
+3. Run `python3 send.py`
 4. Follow instructions to send file to cron consumer
