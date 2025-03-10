@@ -50,12 +50,12 @@ CREATE SCHEMA `atm_report`;
 ```
 3. Migrate tables
 ```bash
-# Replace path, user, and pass in this command
-./migrate -path /path/to/migrations -database 'mysql://user:pass@tcp(localhost:3306)/atm_report' up
+# Replace migrations path, user, and pass in this command
+./migrate -path migrations/path -database 'mysql://user:pass@tcp(localhost:3306)/atm_report' up
 ```
 
-### Build
-`make`
+### App
+`make build`
 
 ## Run
 
@@ -63,9 +63,10 @@ CREATE SCHEMA `atm_report`;
 `./atm-report`
 
 ### Producer
-1. Open Terminal
+1. Open terminal
 2. Navigate to script directory
-3. Run producer
+3. Run
 ```bash
 python3 send.py
 ```
+4. Follow instructions to send file to cron consumer

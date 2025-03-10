@@ -1,6 +1,11 @@
-all: build
+all: dev
 
-build:
+setup:
+	wire
+	go mod tidy
+	go build
+
+dev:
 	wire
 	go build
 	go mod tidy
