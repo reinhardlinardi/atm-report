@@ -9,8 +9,8 @@ import (
 	"github.com/reinhardlinardi/atm-report/app/cron"
 	"github.com/reinhardlinardi/atm-report/app/server"
 	"github.com/reinhardlinardi/atm-report/internal/config"
+	"github.com/reinhardlinardi/atm-report/internal/filestorage"
 	"github.com/reinhardlinardi/atm-report/internal/history"
-	"github.com/reinhardlinardi/atm-report/internal/storage"
 	"github.com/reinhardlinardi/atm-report/internal/transaction"
 	"github.com/reinhardlinardi/atm-report/pkg/db"
 	"github.com/reinhardlinardi/atm-report/pkg/fswatch"
@@ -27,8 +27,8 @@ func initApp(conf *config.Config, dbConf *db.Config) (*app.App, error) {
 		wire.Bind(new(db.DB), new(*db.DBImpl)),
 		fswatch.New,
 		wire.Bind(new(fswatch.Watcher), new(*fswatch.WatcherImpl)),
-		storage.New,
-		wire.Bind(new(storage.Storage), new(*storage.StorageImpl)),
+		filestorage.New,
+		wire.Bind(new(filestorage.Storage), new(*filestorage.StorageImpl)),
 		history.New,
 		wire.Bind(new(history.Repository), new(*history.RepositoryImpl)),
 		transaction.New,

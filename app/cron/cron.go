@@ -6,33 +6,33 @@ import (
 	"path/filepath"
 
 	"github.com/reinhardlinardi/atm-report/internal/config"
-	historydb "github.com/reinhardlinardi/atm-report/internal/history"
-	"github.com/reinhardlinardi/atm-report/internal/storage"
-	transactiondb "github.com/reinhardlinardi/atm-report/internal/transaction"
+	"github.com/reinhardlinardi/atm-report/internal/filestorage"
+	"github.com/reinhardlinardi/atm-report/internal/history"
+	"github.com/reinhardlinardi/atm-report/internal/transaction"
 	"github.com/reinhardlinardi/atm-report/pkg/fswatch"
 )
 
 type Cron struct {
-	config        *config.CronConfig
-	watcher       fswatch.Watcher
-	storage       storage.Storage
-	historyDB     historydb.Repository
-	transactionDB transactiondb.Repository
+	config      *config.CronConfig
+	watcher     fswatch.Watcher
+	fileStorage filestorage.Storage
+	history     history.Repository
+	transaction transaction.Repository
 }
 
 func New(
 	config *config.CronConfig,
 	watcher fswatch.Watcher,
-	storage storage.Storage,
-	historyDB historydb.Repository,
-	transactionDB transactiondb.Repository,
+	fileStorage filestorage.Storage,
+	history history.Repository,
+	transaction transaction.Repository,
 ) *Cron {
 	return &Cron{
-		config:        config,
-		watcher:       watcher,
-		storage:       storage,
-		historyDB:     historyDB,
-		transactionDB: transactionDB,
+		config:      config,
+		watcher:     watcher,
+		fileStorage: fileStorage,
+		history:     history,
+		transaction: transaction,
 	}
 }
 
@@ -47,7 +47,7 @@ func (cron *Cron) runWatcher(ctx context.Context, cancel context.CancelFunc, cha
 	err := cron.watcher.WatchCreated(ctx, cron.config.Path, channel)
 
 	if err != nil {
-		fmt.Printf("err watcher: %s\n", err.Error())
+		fmt.Printf("err start watcher: %s\n", err.Error())
 		cancel()
 		close(channel)
 	}
@@ -55,10 +55,18 @@ func (cron *Cron) runWatcher(ctx context.Context, cancel context.CancelFunc, cha
 
 func (cron *Cron) runConsumer(_ context.Context, _ context.CancelFunc, channel chan string) {
 	for path := range channel {
-		if err := cron.handleFile(path); err != nil {
+		filename := filepath.Base(path)
+		processed, err := cron.handleFile(path)
+
+		if err != nil {
 			fmt.Printf("err handle file: %s\n", err.Error())
+			continue
+		}
+
+		if processed {
+			fmt.Printf("done: %s\n", filename)
 		} else {
-			fmt.Printf("finished: %s\n", filepath.Base(path))
+			fmt.Printf("skipped: %s\n", filename)
 		}
 	}
 }

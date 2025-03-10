@@ -8,22 +8,22 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/reinhardlinardi/atm-report/internal/config"
-	transactiondb "github.com/reinhardlinardi/atm-report/internal/transaction"
+	"github.com/reinhardlinardi/atm-report/internal/transaction"
 )
 
 type Server struct {
-	config        *config.ServerConfig
-	http          *http.Server
-	router        *chi.Mux
-	transactionDB transactiondb.Repository
+	config      *config.ServerConfig
+	http        *http.Server
+	router      *chi.Mux
+	transaction transaction.Repository
 }
 
-func New(config *config.ServerConfig, transactionDB transactiondb.Repository) *Server {
+func New(config *config.ServerConfig, transaction transaction.Repository) *Server {
 	addr := fmt.Sprintf(":%d", config.Port)
 	router := chi.NewRouter()
 
 	server := &http.Server{Addr: addr, Handler: router}
-	return &Server{config: config, http: server, router: router, transactionDB: transactionDB}
+	return &Server{config: config, http: server, router: router, transaction: transaction}
 }
 
 func (server *Server) Run(ctx context.Context, cancel context.CancelFunc) {

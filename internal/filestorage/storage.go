@@ -1,4 +1,4 @@
-package storage
+package filestorage
 
 import "os"
 
@@ -8,7 +8,7 @@ func New() *StorageImpl {
 	return &StorageImpl{}
 }
 
-func (st *StorageImpl) Fetch(path string) ([]byte, error) {
+func (st *StorageImpl) Get(path string) ([]byte, error) {
 	raw, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err

@@ -1,6 +1,6 @@
 package history
 
 type Repository interface {
-	IsExist(atmId, date string) (bool, error)
-	Insert(atmId, date string) (int64, error)
+	Check(atmId, date string, seq int) (exist bool, err error)
+	Append(atmId, date string, seq int) (int64, error)
 }
